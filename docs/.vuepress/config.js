@@ -144,7 +144,9 @@ module.exports = {
         text: '我喜欢的文字',
         items: [
           { text: '短文', link: '/words/myFavoriteWords' },
-          { text: '长文', link: '/words/myFavoriteArticle' }
+          { text: '长文', link: '/words/myFavoriteArticle' },
+          { text: '音乐', link: '/words/myMusic' },
+          { text: '梦境', link: '/words/dream' }
         ]
       },
       // {
@@ -179,8 +181,11 @@ module.exports = {
         path: '/words/myFavoriteArticle',
         collapsable: false, // 可选的, 默认值是 true,
         sidebarDepth: 2,    // 可选的, 默认值是 1
-        children: [ 
-            'words/myFavoriteArticle', 'words/myFavoriteWords',  'words/myMusic'
+        children: [
+            'words/myFavoriteArticle', 
+            'words/myFavoriteWords',
+            'words/myMusic',
+            'words/dream'
          ],
         initialOpenGroupIndex: -1 // 可选的, 默认值是 0
       }

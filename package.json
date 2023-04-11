@@ -1,7 +1,7 @@
 {
   "name": "my-blog",
   "version": "1.0.0",
-  "description": "Hello VuePress",
+  "description": "blog",
   "main": "index.js",
   "keywords": [
     "blog",
