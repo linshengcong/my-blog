@@ -171,7 +171,7 @@ module.exports = {
         title: '技术',   // 必要的
         path: '/guide/tech',      // 可选的, 标题的跳转链接，应为绝对路径且必须存在
         collapsable: false, // 可选的, 默认值是 true,
-        sidebarDepth: 2,    // 可选的, 默认值是 1
+        sidebarDepth: 1,    // 可选的, 默认值是 1
         children: [
           'guide/tech'
         ]
@@ -180,7 +180,7 @@ module.exports = {
         title: '文字',
         path: '/words/myFavoriteArticle',
         collapsable: false, // 可选的, 默认值是 true,
-        sidebarDepth: 2,    // 可选的, 默认值是 1
+        sidebarDepth: 1,    // 可选的, 默认值是 1
         children: [
             'words/myFavoriteArticle', 
             'words/myFavoriteWords',
@@ -190,7 +190,7 @@ module.exports = {
         initialOpenGroupIndex: -1 // 可选的, 默认值是 0
       }
     ],
-    sidebarDepth: 2,
+    sidebarDepth: 1,
     palette: path.resolve(__dirname, 'palette.styl'),//样式修改
   }
 }
