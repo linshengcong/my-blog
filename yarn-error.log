@@ -1,0 +1,58 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn add vuepress-plugin-nuggets-style-copy -D
+
+PATH: 
+  /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/usr/local/mysql/bin:/usr/local/mysql/bin
+
+Yarn version: 
+  1.22.11
+
+Node version: 
+  16.14.2
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: ENOENT: no such file or directory, copyfile '/Users/linshengcong/Library/Caches/Yarn/v6/npm-ansi-align-3.0.1-0cdf12e111ace773a86e9a1fad1225c43cb19a59-integrity/node_modules/ansi-align/README.md' -> '/Users/linshengcong/Documents/GitHub/my-blog/node_modules/vuepress/node_modules/ansi-align/README.md'
+
+npm manifest: 
+  {
+    "name": "my-blog",
+    "version": "1.0.0",
+    "description": "Hello VuePress",
+    "main": "index.js",
+    "devDependencies": {
+      "@vuepress/plugin-back-to-top": "^1.2.0",
+      "@vuepress/plugin-google-analytics": "^1.4.1",
+      "@vuepress/plugin-medium-zoom": "^1.4.1",
+      "@vuepress/plugin-pwa": "^1.4.1",
+      "gh-pages": "^2.1.1",
+      "vuepress": "^1.4.1",
+      "vuepress-plugin-dynamic-title": "^1.0.0",
+      "vuepress-plugin-meting": "^0.3.3"
+    },
+    "scripts": {
+      "docs:build": "vuepress build docs",
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "dev": "vuepress dev docs",
+      "build": "vuepress build docs",
+      "deploy": "npm run build && gh-pages -d docs/.vuepress/dist"
+    },
+    "author": "Shengcong.Lin",
+    "license": "ISC",
+    "dependencies": {
+      "busuanzi.pure.js": "^1.0.3",
+      "element-ui": "^2.13.1",
+      "vuepress-plugin-comment": "^0.7.3"
+    },
+    "engines": {
+      "node": ">16.14.0 <17"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
