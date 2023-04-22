@@ -1,18 +1,28 @@
 const fs = require('fs')
 const path = require('path')
 // 获取该文件夹下的所有文件名
-const getFileNames = (parentFileName) => {
-  const results = []
-  const files = fs.readdirSync(`./docs${parentFileName}`)
-  files.forEach((val) => {
-    if ('README.md'.includes(val)) {
-      // results.push('')
-    } else {
-      results.push(val)
+const getFileNames = parentFileName => {
+  const files = fs.readdirSync(`./docs/${parentFileName}`)
+  const res =  []
+  files.forEach(fileName => {
+    const arr = fileName.split('.')
+    if (arr[arr.length - 1] === 'md') {
+      res.push(parentFileName + '/' + arr.slice(0,arr.length - 1).join('.'))
     }
   })
-  return results
+  return res
 }
+
+/**
+ * 技术相关文档
+ */
+const techDocList = getFileNames('guide')
+
+/**
+ * 个人文章
+ */
+const words = getFileNames('words')
+
 module.exports = {
   title: '我的小站',
   description: '加油、努力',
@@ -136,10 +146,12 @@ module.exports = {
       },
       {
         text: '技术相关', link: '/guide/tech',
+        items: [
+          { text: 'TypeScript', link: '/guide/tech' },
+          { text: 'Git', link: '/guide/git' },
+          { text: 'Vue', link: '/guide/vue' }
+        ]
       },
-      // {
-      //   text: '归家之路', link: '/guide/theWayHome',
-      // },
       {
         text: '我喜欢的文字',
         items: [
@@ -169,24 +181,17 @@ module.exports = {
     sidebar: [
       {
         title: '技术',   // 必要的
-        path: '/guide/tech',      // 可选的, 标题的跳转链接，应为绝对路径且必须存在
+        path: `/${techDocList[0]}`,      // 可选的, 标题的跳转链接，应为绝对路径且必须存在
         collapsable: false, // 可选的, 默认值是 true,
-        sidebarDepth: 1,    // 可选的, 默认值是 1
-        children: [
-          'guide/tech'
-        ]
+        sidebarDepth: 2,    // 可选的, 默认值是 1
+        children: techDocList
       },
       {
         title: '文字',
-        path: '/words/myFavoriteArticle',
+        path: `/${words[0]}`,
         collapsable: false, // 可选的, 默认值是 true,
-        sidebarDepth: 1,    // 可选的, 默认值是 1
-        children: [
-            'words/myFavoriteArticle', 
-            'words/myFavoriteWords',
-            'words/myMusic',
-            'words/dream'
-         ],
+        sidebarDepth: 2,    // 可选的, 默认值是 1
+        children: words,
         initialOpenGroupIndex: -1 // 可选的, 默认值是 0
       }
     ],

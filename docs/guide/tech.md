@@ -1,39 +1,10 @@
-# 值得学习的代码
-
-##  利用 defineProperty 兼容代码
-
-```js
-// Test via a getter in the options object to see 
-// if the passive property is accessed
-var supportsPassive = false;
-try {
-  // 利用defineProperty 拦截对象, 判断是否支持设置 passive 属性
-  var opts = Object.defineProperty({}, 'passive', {
-    get: function() {
-      supportsPassive = true;
-    }
-  });
-  window.addEventListener("test", null, opts);
-} catch (e) {}
-
-// Use our detect's results. 
-// passive applied if supported, capture will be false either way.
-elem.addEventListener(
-  'touchstart',
-  fn,
-  supportsPassive ? { passive: true } : false
-); 
-```
-
 # TypeScript
 
 ## 实用公共类型
 
-declare type Recordable<T = any> = Record<string, T>;
+`declare type Recordable<T = any> = Record<string, T>;`
 
 声明一个可传入任意类型的对象类型
-
-
 
 ### enum
 
@@ -50,7 +21,7 @@ enum NumberEnum {
 obj['Fisrt'] // 0
 ```
 
--  数字枚举可以反向映射，字符串枚举不行
+- 数字枚举可以反向映射，字符串枚举不行
 
 ```typescript
 enum NumberEnum {
@@ -62,8 +33,6 @@ enum NumberEnum {
 
 obj[NumberEnum.Fisrt] // first
 ```
-
-
 
 ### interface 和 type 的不同
 
@@ -104,8 +73,6 @@ const person: Person3 = {
 }
 ```
 
-
-
 **type**
 
 - type 可以使用联合类型，元组，基本类型别名
@@ -122,8 +89,6 @@ type Pet = Dog | Cat
 type PetList = [Dog,Cat]
 type Num = number
 ```
-
-
 
 ### interface 和 class 的不同
 
@@ -152,16 +117,10 @@ interface Point2 extends Point {
 }
 ```
 
-
-
-
-
 ### implements 和 extends 的不同
 
 - 继承，一个新的接口或者类，从父类或者接口继承所有的属性和方法，不可以重写属性，但可以重写方法
 - 实现，一个新的类，从父类或者接口实现所有的属性和方法，同时可以重写属性和方法
-
-
 
 ### declare（声明）
 
@@ -178,8 +137,6 @@ declare interface Array<T> {
   remove: (cb: (item: T) => boolean) => void;
 }
 ```
-
-
 
 #### declare module
 
@@ -224,8 +181,6 @@ declare module '*.scss';
 
 ```
 
-
-
 #### declare global {}
 
 - 在 `d.ts` 文件中声明的，等价于 在 `.ts` 文件中使用 `declare global { }` 声明
@@ -234,10 +189,6 @@ declare module '*.scss';
 ```typescript
 在 d.ts 文件中声明的，等价于 在 .ts 文件中使用 declare global { } 声明
 ```
-
-
-
-
 
 ### 泛型
 
@@ -290,8 +241,6 @@ function loggingIdentity<T extends Lengthwise>(arg: T): T {
 }
 ```
 
-
-
 ### [class](http://ts.xcatliu.com/advanced/class.html)
 
 #### 修饰符（Modifiers）
@@ -299,8 +248,8 @@ function loggingIdentity<T extends Lengthwise>(arg: T): T {
 用法可以多参考 table.ts
 
 - public 默认值
-- private 私有，不能外部访问 
-- protected 本身或者子类能访问 
+- private 私有，不能外部访问
+- protected 本身或者子类能访问
 - static 修饰符，静态方法,实例化后无法调用，只能直接通过类来调用
 
 ```typescript
@@ -349,8 +298,6 @@ let c = new Cat('Tom'); // Tom
 console.log(c.sayHi()); // Meow, My name is Tom
 ```
 
-
-
 #### abstract class
 
 - `abstract` 用于定义抽象类和其中的抽象方法。
@@ -375,14 +322,12 @@ class Cat extends Animal {
 let cat = new Cat('Tom');
 ```
 
-
-
 ### 函数
 
 #### 函数表达式
 
--    **?:**    表示可选参数，可选参数必须在必选参数后面。
--    TS 函数支持重载
+- **?:**    表示可选参数，可选参数必须在必选参数后面。
+- TS 函数支持重载
 
 ```ts
 // TS 的重载不是真正意义的重载，只支持这种方式
@@ -418,13 +363,11 @@ let mySum: (x: number, y: number) => number = function (x: number, y: number): n
 
 在 TypeScript 的类型定义中，`=>` 用来表示函数的定义，左边是输入类型，需要用括号括起来，右边是输出类型。
 
-
-
 ### interface
 
 - 接口对数据进行组织结构
 - 赋值的时候，变量的形状必须和接口的形状保持一致
-- 需要可选属性使用   **?:**    
+- 需要可选属性使用   **?:**
 - 支持 readonly 只读修饰符
 - 当接口需要任意扩充的时候
 
@@ -442,8 +385,6 @@ let tom: Person = {
 };
 ```
 
-
-
 ### type
 
 类型别称可以继承类型别称和接口
@@ -457,14 +398,12 @@ type Name = {
 type User = Name & { age: number }
 ```
 
-- type extends interface 
+- type extends interface
 
 ```ts
 interface Namge = { name: string }
 type User = Name & { age: number }
 ```
-
-
 
 ### TS中typeof的用法
 
@@ -490,21 +429,13 @@ type User = Name & { age: number }
    formatPoint(P)
    ```
 
-
-
 ### TS 类型保护 (typeof  instanceof)
-
-
-
-
 
 ### 帮助类型
 
-
-
 3.5 版本之后，TypeScript 在 *lib.es5.d.ts* 里添加了一个 `Omit<T, K>` 帮助类型。`Omit<T, K>` 类型让我们可以从另一个对象类型中剔除某些属性，并创建一个新的对象类型：
 
-```
+```ts
 type User = {
 id: string;
 name: string;
@@ -520,10 +451,10 @@ name: string;
 
 而在 *lib.es5.d.ts* 里面 `Omit<T, K>` 帮助类型长这样：
 
-```
-_/**_
+```ts
+/**_
 _* Construct a_ _type_ _with the properties of T except_ _for_ _those in_ _type_ _K._
-_ */_
+_ */
 type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
 ```
 
@@ -533,7 +464,7 @@ type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
 
 我们先从上面的那个 User 类型开始：
 
-```
+```ts
 type User = {
 id: string;
 name: string;
@@ -543,15 +474,15 @@ email: string;
 
 首先，我们需要找到所有 User 类型中的属性名。我们可以用 [keyof](https://link.segmentfault.com/?enc=XREvOg7pLQ%2FRNV4lanNDkA%3D%3D.Ia25Isu4rc7%2Fn7ACcLw63ZFj870ZdbwG8fJtsCwGw4Uecwx51tWzZu0O6sNb95eaSikbtR%2B3GBsn8SRJGZ1rDhhLs5P472e2fe48PW10r8I%3D) [操作符](https://link.segmentfault.com/?enc=bylP4ZU%2F2pGjBoFKkRxe4g%3D%3D.4vXJWVTbTkRUaJoksgk07EgFuS0UUS9wuX5PSLVuNFLnWUn0IUGjhublUgKcljmPRyJW0gh%2B%2FUU0vLeJ6VbL8HZfzxj3%2F%2Fqhpa6fIVBTLfI%3D)来获取一个包含所有属性名字[字符串](https://link.segmentfault.com/?enc=ygO6ZOgu%2FLnAwUY2ti7gLA%3D%3D.BTYD7FPrhL99TMnahAkqYoM%2Bf620BO3colFgP971j5QXjItE%2B8TH2Qo4WIe9NxRg4Ct4lj9qeAy248kKrMNQm80KpNsPKr1SCdVxNzI9%2FTA%3D)的联合属性：
 
-```
+```ts
 type UserKeys = keyof User;
 _// 等价于:_
 type UserKeys = "id" | "name" | "email";
 ```
 
-然后我们需要能够把联合属性中的某个字符串字面量剔除出去的能力。那我们的 `User` 类型举例的话，我们想要从` "id" | "name" | "email"` 中去掉 `"email"` 。我们可以用 `Exclude<T, U>` 帮助类型来做这件事：
+然后我们需要能够把联合属性中的某个字符串字面量剔除出去的能力。那我们的 `User` 类型举例的话，我们想要从`"id" | "name" | "email"` 中去掉 `"email"` 。我们可以用 `Exclude<T, U>` 帮助类型来做这件事：
 
-```
+```ts
 type UserKeysWithoutEmail = Exclude<UserKeys, "email">;
 _// 等价于:_
 type UserKeysWithoutEmail = Exclude<
@@ -564,18 +495,18 @@ type UserKeysWithoutEmail = "id" | "name";
 
 而 `Exclude<T, U>` 在 *lib.es5.d.ts* 里面是这样定义的：
 
-```
+```ts
 /**
  * Exclude from T those types that are assignable to U
  */
 type Exclude<T, U> = T extends U ? never : T;
 ```
 
-它用了一个[条件类型](https://link.segmentfault.com/?enc=n8DmfL06n7BtVZkDDza75g%3D%3D.nTdPkPP12OYGh30Mqrq8lbTrd%2FQ8igyckCA4GDkJmLLBXW5G%2FELUr7C3OWd%2Fk8vA7h9dv%2F%2Fo7LK78LUpw36Btg%3D%3D)和 [never](https://link.segmentfault.com/?enc=SFKR%2FFA%2FTjwJSgX%2Fbj3xaQ%3D%3D.tW5ps%2BfXfkubWhq%2FE%2BDVAMx4i5TfoNUSs3uqkU2u6KglLefzOvwlhMr2vH1n2wuVmp3R3zRqraKqhjigsG7Zuw%3D%3D) [类型](https://link.segmentfault.com/?enc=h47TOVJciU24dYEBE7bA4w%3D%3D.yMB6IL9HF%2F%2FCR%2Fh3JM6hegjzWhRv49UzK4yX9oGbNEMdV4ijXpQs1rTOQLuDTJ746LuY4%2FXNLDJ1wkifNml9ag%3D%3D)。用 `Exclude<T, U>` 实际上我们在从联合类型`"id" | "name" | "email"` 中去掉那些匹配` "email"` 类型的类型。而匹配` "email"` 类型的只有` "email"` ，所以就剩下了· "id" | "name" 。
+它用了一个[条件类型](https://link.segmentfault.com/?enc=n8DmfL06n7BtVZkDDza75g%3D%3D.nTdPkPP12OYGh30Mqrq8lbTrd%2FQ8igyckCA4GDkJmLLBXW5G%2FELUr7C3OWd%2Fk8vA7h9dv%2F%2Fo7LK78LUpw36Btg%3D%3D)和 [never](https://link.segmentfault.com/?enc=SFKR%2FFA%2FTjwJSgX%2Fbj3xaQ%3D%3D.tW5ps%2BfXfkubWhq%2FE%2BDVAMx4i5TfoNUSs3uqkU2u6KglLefzOvwlhMr2vH1n2wuVmp3R3zRqraKqhjigsG7Zuw%3D%3D) [类型](https://link.segmentfault.com/?enc=h47TOVJciU24dYEBE7bA4w%3D%3D.yMB6IL9HF%2F%2FCR%2Fh3JM6hegjzWhRv49UzK4yX9oGbNEMdV4ijXpQs1rTOQLuDTJ746LuY4%2FXNLDJ1wkifNml9ag%3D%3D)。用 `Exclude<T, U>` 实际上我们在从联合类型`"id" | "name" | "email"` 中去掉那些匹配`"email"` 类型的类型。而匹配`"email"` 类型的只有`"email"` ，所以就剩下了· "id" | "name" 。
 
 最后，我们需要创意一个对象类型，包含 User 类型属性子集的对象类型。其实更具体的说，就是要创建一个对象类型，它的属性都是在联合类型 UserKeysWithoutEmail 中的。我们可以用 Pick<T, K> 帮助类型来挑出来所有对应的属性名：
 
-```
+```ts
 type UserWithoutEmail = Pick<User, UserKeysWithoutEmail>;
 // 等价于:
 type UserWithoutEmail = Pick<User, "id" | "name">;
@@ -588,7 +519,7 @@ name: string;
 
 而 Pick<T, K> 帮助类型是这样定义的：
 
-```
+```ts
 /**
  * From T, pick a set of properties whose keys are in the union K
  */
@@ -601,37 +532,37 @@ Pick<T, K> 帮助类型是一个[映射类型](https://link.segmentfault.com/?en
 
 现在，我们来把上面提到的 keyof ，Exclude<T, U> 和 Pick<T, K> 整合成一个类型：
 
-```
+```ts
 type UserWithoutEmail = Pick<User, Exclude<keyof User, "email">>;
 ```
 
 值得注意的是这样的写法只能应用到我们定义的 User 类型中。我们加入一个范型，就能让它用在其他地方了：
 
-```
+```ts
 type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
 ```
 
 现在，我们可以计算出我们的 UserWithoutEmail 类型了：
 
-```
+```ts
 type UserWithoutEmail = Omit<User, "email">;
 ```
 
 因为对象的键只能是字符串、数字或 Symbol，那么我们可以给 K 加个约束条件：
 
-```
+```ts
 type Omit<T, K extends string | number | symbol> = Pick<T, Exclude<keyof T, K>>;
 ```
 
 这样直接约束 extends string | number | symbol 看上去有点啰嗦了。我们可以用 keyof any 来实现，因为它们是等价的：
 
-```
+```ts
 type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
 ```
 
 于是我们现在完成了！我们已经实现了 *lib.es5.d.ts* 中定义的 Omit<T, K> 类型了：
 
-```
+```ts
 _/**_
 _* Construct a_ _type_ _with the properties of T except_ _for_ _those in_ _type_ _K._
 _ */_
@@ -642,7 +573,7 @@ type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
 
 下面这段代码就是逐步拆解的 Omit<User, "email"> 类型。试着跟随每个步骤并理解 TypeScript 是如何计算出最终的类型的：
 
-```
+```ts
 type User = {
 id: string;
 name: string;
@@ -686,8 +617,6 @@ name: string;
 };
 ```
 
-
-
 ### 实用技巧
 
 ```ts
@@ -701,11 +630,9 @@ name: string;
   type RoleListResult = RoleListResultItem[];
 ```
 
-
-
 ### TS 源码解析
 
-https://segmentfault.com/a/1190000023800536
+<https://segmentfault.com/a/1190000023800536>
 
 1. record
 
@@ -718,8 +645,6 @@ type Record<K extends keyof any, T> = {
 - `Record` 接受两个类型变量，`Record` 生成的类型具有类型 K 中存在的属性，值为类型 T
 - K extends keyof any 的意意思是 type KEY = keyof any 即 string | number | symbol
 - 因为JS 对象里的key 只能是这三种类型之一
-
-
 
 ### TS 高级特性
 
@@ -749,11 +674,11 @@ const person: Person = {
 const name = getProperty(person, "name");
 ```
 
-​	
+​ 
 
 ```ts
 type ReturnType<T extends (...args: any[]) => any>
-	= T extends (...args: any[]) => infer R
+ = T extends (...args: any[]) => infer R
   ? R
   : any;
 
@@ -761,51 +686,3 @@ type Record<T, U> = {
   []:
 }
 ```
-
-
-## git
-
-1.  git clone 报错  fatal: unable to access
-
-```shell
-$ git config --global --unset http.proxy
-$ git config --global --unset https.proxy
-```
-
-2. git colone 报错 remote: The project you were looking for could not be found or you don't have permission to view it.
-
-```shell
-# 可能是本地远程名字不一样, 加上自己用户名
-$ git clone http://Shengcong.Lin@xx.xx.xx/wap-website.git
-```
-
-3. 拉取B仓库代码( A仓库同步 B仓库代码内容)
-
-```shell
-git remote // 查看远程仓库的名字 -v 详情
-git remote add B仓库别名 / B仓库git地址 // 添加远程仓库
-git remote rm 仓库别名 // 删除远程仓库
-git fetch B仓库别名 // 下载B仓库代码
-git checkout -b B-prod wap-website/prod // 新建B仓库分支
-git checkout -b zh-master wap-website/master
-切换到A 分支再 merge B分支 over
-```
-
-## 关于Mixins
-
-个人还是很喜欢 Mixins 的, 混入的方式能很好的把一个聚合的大页面, 大工具剥离开来.
-
-### Mixins 的优点
-
-1. 把整块完整的带有生命周期的逻辑彻底抽离出来, 实现最大程度的抽象节藕, 对大型聚合模块很好的分解成足够灵活的插件, 也方便review 和定位问题.
-
-### Mixins 的缺点
-
-1. 视图逻辑分散问题, 视图和混入函数没法一起绑定, 实现上往往需要把视图抽成一个组件注册在主页面里, 再把逻辑抽离写到mixin 里, 混入主页面
-2. 生命周期钩子会合并, 主页面mounted 混入函数内是async mounted, 导致主页面的mounted 也变成异步, 这种问题很隐蔽, 发现后把异步的函数单独抽离.
-3. 有混入函数时, Vue 的生命周期会先执行混入函数的生命周期, 再执行主页面的生命周期, 但是一般当我需要注册一个工具实例的时候, 肯定都是在主页面注册, 混入函数在初始化时候需要一个实例注册很多事件及其他配置, 这种情况解决方案有很多, 我最后选择了在混入函数初始化的时候使用`nextTick`, 等主页面执行完毕挂载节点完成, 再执行混入函数的初始化钩子.
-4. 多个混入函数之间先后顺序问题
-5. 衍生的变量相互引用问题, 在主页面 or 混入函数里使用到一个变量或者调用一个方法, 找不到声明和引用的地方, 只能全局搜索, 或者一个个混入函数找过去, 这些问题在大型项目偏向多人协作的团队肯定会对开发带来不小的心智负担.
-
-### 总结
-综合来说在没有setup 的情况下, 我还是非常偏爱Mixins 的, 纵使他的缺点也非常多, 对于团队协作来说慎用, 需要团队成员的编码水平达到一定基准线, 前期多及时review, 制定规范.  多写备注, 多思考, 再组织, 写可理解可维护性代码, 非必要不要相互依赖
