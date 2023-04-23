@@ -3,11 +3,11 @@ const path = require('path')
 // 获取该文件夹下的所有文件名
 const getFileNames = parentFileName => {
   const files = fs.readdirSync(`./docs/${parentFileName}`)
-  const res =  []
+  const res = []
   files.forEach(fileName => {
-    const arr = fileName.split('.')
-    if (arr[arr.length - 1] === 'md') {
-      res.push(parentFileName + '/' + arr.slice(0,arr.length - 1).join('.'))
+    if (path.extname(fileName) === '.md') {
+      const path = fileName.slice(0, fileName.length - 3)
+      res.push(parentFileName + '/' + path)
     }
   })
   return res
