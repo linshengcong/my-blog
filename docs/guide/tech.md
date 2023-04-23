@@ -674,7 +674,7 @@ const person: Person = {
 const name = getProperty(person, "name");
 ```
 
-​ 
+​
 
 ```ts
 type ReturnType<T extends (...args: any[]) => any>
@@ -685,4 +685,62 @@ type ReturnType<T extends (...args: any[]) => any>
 type Record<T, U> = {
   []:
 }
+```
+
+### 进阶用法
+
+- typeof  获取一个变量的声明类型，如果不存在，则获取该类型的推论类型
+
+```ts
+// 获取声明的类型
+interface Person {
+  name: string;
+  age: number;
+  location?: string;
+}
+
+const jack: Person = { name: 'jack', age: 100 };
+type Jack = typeof jack; // -> Person
+
+// 推导出来的类型
+function foo(x: number): Array<number> {
+  return [x];
+}
+
+type F = typeof foo; // -> (x: number) => number[]
+
+```
+
+`keyof` 可以用来取得一个对象接口的所有 key 值：
+
+```ts
+interface Person {
+    name: string;
+    age: number;
+    location?: string;
+}
+
+type K1 = keyof Person; // "name" | "age" | "location"
+type K2 = keyof Person[];  // "length" | "push" | "pop" | "concat" | ...
+type K3 = keyof { [x: string]: Person };  // string | number
+```
+
+`in` 可以遍历枚举类型
+
+```typescript
+type Keys = "a" | "b"
+type Obj =  {
+  [p in Keys]: any
+} // -> { a: any, b: any }
+上面 in 遍历 Keys，并为每个值赋予 any 类型。
+```
+
+infer  在条件类型语句中, 可以用 `infer` 声明一个类型变量并且对它进行使用
+
+```typescript
+type ReturnType<T> = T extends (
+  ...args: any[]
+) => infer R
+  ? R
+  : any;
 ```
