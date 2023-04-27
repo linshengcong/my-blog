@@ -708,7 +708,6 @@ function foo(x: number): Array<number> {
 }
 
 type F = typeof foo; // -> (x: number) => number[]
-
 ```
 
 `keyof` 可以用来取得一个对象接口的所有 key 值：
