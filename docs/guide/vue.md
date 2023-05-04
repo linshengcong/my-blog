@@ -255,3 +255,90 @@ onMouseenter
 ### 总结
 
 综合来说在没有setup 的情况下, 我还是非常偏爱Mixins 的, 纵使他的缺点也非常多, 对于团队协作来说慎用, 需要团队成员的编码水平达到一定基准线, 前期多及时review, 制定规范.  多写备注, 多思考, 再组织, 写可理解可维护性代码, 非必要不要相互依赖
+
+## Vue2 与 Vue3 响应式原理的区别
+
+### Object.defineProperty
+
+1. 只能一个一个的去拦截对象里的属性
+2. 只能拦截已有的对象属性, 后面加的就不行, 所以Vue2 中需要使用 $set
+3. 不能直接拦截数组的get set, 需要靠length 属性实现, 存在缺陷, Vue2 中使用重写原型链方式
+4. 不能拦截属性的删除操作
+5. 需要使用一个额外的属性来存储属性值, 避免循环调用栈溢出
+
+```js
+onst obj = {};
+
+Object.defineProperty(obj, 'name', {
+  get() {
+    console.log('get name');
+    return this._name;
+  },
+  set(value) {
+    console.log('set name');
+    this._name = value;
+  },
+});
+
+Object.defineProperty(obj, 'age', {
+  get() {
+    console.log('get age');
+    return this._age;
+  },
+  set(value) {
+    console.log('set age');
+    this._age = value;
+  },
+});
+
+obj.name = 'Tom'; // set name
+```
+
+```js
+// 重写数组原型链
+const arrayProto = Array.prototype
+const arrayMethods = Object.create(arrayProto)
+
+['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'].forEach(method => {
+  const original = arrayProto[method]
+  def(arrayMethods, method, function mutator (...args) {
+    const result = original.apply(this, args)
+    const ob = this.__ob__
+    let inserted
+    switch (method) {
+      case 'push':
+      case 'unshift':
+        inserted = args
+        break
+      case 'splice':
+        inserted = args.slice(2)
+        break
+    }
+    if (inserted) ob.observeArray(inserted)
+    ob.dep.notify()
+    return result
+  })
+})
+```
+
+### Proxy
+
+1. 可以拦截整个对象的浅层属性的各种操作
+2. 新增删除也能拦截到
+3. 可以配合 Reflect 更加标准化反射对象的方法
+4. 如果只需要拦截对象的部分属性, 性能没那么好
+
+```js
+const handler = {
+  get(target, key, receiver) {
+    console.log(`get ${key}`);
+    return Reflect.get(target, key, receiver);
+  },
+  set(target, key, value, receiver) {
+    console.log(`set ${key} = ${value}`);
+    return Reflect.set(target, key, value, receiver);
+  },
+};
+
+const obj = new Proxy({}, handler);
+```
