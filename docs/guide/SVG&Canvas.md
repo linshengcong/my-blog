@@ -56,6 +56,85 @@
 </foreignObject>
 ```
 
+### SVG (safari、HarmonyOS) 兼容问题
+
+使用vue 自定义节点来渲染节点内容，利用SVG 的foreignObject 元素可以插入HTML 结构的特征, 因为自定义节点内容都是渲染在SVG 的foreignObject 元素内部，因为部分浏览器出现兼容性问题(Safari, HarmonyOS)，主要表现形式为
+
+#### 节点定位失效,部分图标渲染错位重复渲染
+
+解决方案:
+
+不要使用 postion 、transform、opacity 定位来布局, 对于一些需要固定在节点边缘的状态icon, 我的解决方案是使用 float-right + margin + 动态计算高度来解决, float 来使图标脱离文档流, 需要固定在底部的, 我先通过id 获取当前自定义节点, 再通过获取父级 `<foreignObject>` dom, 利用Observer 来监听  `<foreignObject>` height 属性, 来实时通知改变宽高时的底部高度.
+
+```js
+const customNode = document.getElementById(`${this.getNode().id}`)
+
+const foreignObject = customNode.parentNode.parentNode
+
+if (!foreignObject) return
+
+this.nodeHeight = foreignObject.getAttribute('height')
+
+const MutationObserver = window.MutationObserver || window.webkitMutationObserver || window.MozMutationObserver
+
+const mutationObserver = new MutationObserver(() => this.nodeHeight = foreignObject.getAttribute('height')
+
+mutationObserver.observe(foreignObject, { attributeFilter: ['height'] })
+```
+
+#### 导出时候样式缺失
+
+解决方案:
+
+导出函数的第二个参数自行添加 stylesheet 补充样式
+
+```js
+// be like this
+this.graph.toSVG((dataUri: string) => {
+  // todo
+}, {
+  stylesheet: `
+    .my-element {
+      font-size: 12px;
+    }
+  ` 
+})
+```
+
+#### 连接线使用虚线属性, 在Safari 上, 箭头受到虚线属性影响, 变成虚化
+
+解决方案:
+
+我使用SVG marker-end: url() 接收一个自定义的SVG箭头图标解决
+
+SVG 的 `marker-end` 属性可以接收一个 `url()` 函数，指向一个包含 `<marker>` 元素的 `<defs>` 块, 用于定义一个路径末尾的箭头标记
+
+```js
+// be like this
+.x6-edge path:nth-child(2) {
+  marker-end: url(#icon-triangle_-∟-0510);
+  // #icon 因为项目里使用了svg-sprite-loader, 自动拦截 #icon 的 .svg文件使用use元素解析
+  // triangle 是我自定义svg 的文件名
+  // -∟-0510 是我定义的marker id
+}
+```
+
+```xml
+<svg xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="-∟-0510" viewBox="0 0 10 10"
+            refX="8" refY="5"
+            markerUnits="strokeWidth"
+            markerWidth="10" markerHeight="10"
+            orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#A3AFBB"/>
+    </marker>
+  </defs>
+</svg>
+
+ <defs> 元素定义了一个 ID 为 -∟-0510 的标记，然后在 <path> 元素的 marker-end 属性中使用了 url(#-∟-0510)。这个 url() 函数指向了包含 <marker> 元素的 <defs> 块，因此箭头标记被成功地引用了。
+```
+
 ### 能轻松把其中的DOM 元素转成图片, 包括css 动画, 实现导出截图等功能
 
 - 获取DOM 元素outerHTML, 把它插入 `<foreignObject>` 内, 用img 来展示svg, 最后再借助Canvas API 随意输出图片
@@ -209,6 +288,39 @@ eleBox.addEventListener('click', function (event) {
 </script>
 ```
 
+### SVG Sprites 技术
+
+- 在webpack 中使用 svg-sprite-loader 包
+- 把所有图标图形整合在一起，配合`<symbol>` 内部做隔离, 实际呈现的时候准确显示特定图标。
+- 配合 `<use>` 标签xlink:href属性，寻找要使用的元素的, 渲染图形
+- use 特性, 可以重复调用
+
+```xml
+<svg>
+  <defs>
+    <g id="shape">
+        <rect x="0" y="0" width="50" height="50" />
+        <circle cx="0" cy="0" r="50" />
+    </g>
+  </defs>
+
+  <use xlink:href="#shape" x="50" y="50" />
+  <use xlink:href="#shape" x="200" y="50" />
+</svg>
+<!-- 两个use, 渲染两个图形 -->
+```
+
+- use 特性, 跨SVG 调用
+- SVG中的use元素可以调用其他SVG文件的元素，只要在一个文档中。
+
+```xml
+<svg width="500" height="110"><use xlink:href="#shape" x="50" y="50" /></svg>
+<!-- 调用上面的 id -->
+```
+
+- SVG Sprite技术 核心, 因为Sprite 把所有SVG图标都在一个SVG源上, 所以直接use 直接调用完事
+- retina良好，尺寸可任意拉伸，且颜色可控
+
 ## Canvas
 
 - 可以用来简单的绘图, 图片压缩, 图片加水印,图片裁剪等
@@ -301,8 +413,8 @@ mounted() {
           ctx.oBackingStorePixelRatio ||
           ctx.backingStorePixelRatio ||
           1
-        var ratio = devicePixelRatio / backingStoreRatio
-        var oldWidth = chart.width
+        var ratio = devicePixelRatio / 
+        var oldWidth = chart.widthbackingStoreRatio
         var oldHeight = chart.height
         chart.width = oldWidth * ratio
         chart.height = oldHeight * ratio
