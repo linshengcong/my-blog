@@ -1,11 +1,13 @@
 const fs = require('fs')
-const path = require('path')
+const pathModule = require('path')
+
 // 获取该文件夹下的所有文件名
 const getFileNames = parentFileName => {
   const files = fs.readdirSync(`./docs/${parentFileName}`)
   const res = []
   files.forEach(fileName => {
-    if (path.extname(fileName) === '.md') {
+    if ((process.env.NODE_ENV !== 'development' && fileName.includes('project'))) return
+    if (pathModule.extname(fileName) === '.md') {
       const path = fileName.slice(0, fileName.length - 3)
       res.push(parentFileName + '/' + path)
     }
@@ -145,11 +147,11 @@ module.exports = {
         text: '主页', link: '/',
       },
       {
-        text: '技术相关', link: '/guide/tech',
+        text: '技术相关', link: '/guide/TypeScript',
         items: [
-          { text: 'TypeScript', link: '/guide/tech' },
-          { text: 'Git', link: '/guide/git' },
-          { text: 'Vue', link: '/guide/vue' }
+          { text: 'SVG & Canvas', link: '/guide/SVG&Canvas' },
+          { text: 'Vue', link: '/guide/vue' },
+          { text: '设计模式', link: '/guide/designPattern' }
         ]
       },
       {
@@ -196,6 +198,6 @@ module.exports = {
       }
     ],
     sidebarDepth: 1,
-    palette: path.resolve(__dirname, 'palette.styl'),//样式修改
+    palette: pathModule.resolve(__dirname, 'palette.styl'),//样式修改
   }
 }
