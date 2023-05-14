@@ -570,6 +570,18 @@ eleFile.addEventListener('change', function (event) {
 </script>
 ```
 
+## Canvas 解决事件监听问题
+
+- 可视化库一般都会对Canvas 封装成各种类, 调用的时候每个实例可以当做一个虚拟节点用, 利用事件委托, 这样就能解决事件监听问题, 目前主流的两种事件实现方式分别是取色值法和几何法。
+
+## Canvas 异步渲染提高性能
+
+- 利用 requestAnimFrame, 在修改图形时的下一帧进行批量渲染
+
+## Canvas 脏区渲染提高性能
+
+- rect 和 clip 限制绘制区域，从而做到只对部分区域重绘
+
 ## SVG 和 Canvas 异同
 
 1. 监听事件: SVG 可以直接获取元素, 自由添加事件监听器, Canvas 事件监听器的坐标系是相对于 Canvas 元素的,  所以还要进行坐标的计算才能细化.
