@@ -2,7 +2,7 @@
 home: true
 heroImage: https://i.328888.xyz/2023/04/03/iOoE4V.gif
 actionText: 去看看 →
-actionLink: /guide/tech
+actionLink: /guide/SVG&Canvas
 features:
 - title: 技术归纳
   details: 归纳总结提炼规划以前端为主的技术文章
