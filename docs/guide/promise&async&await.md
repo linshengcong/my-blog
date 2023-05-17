@@ -51,6 +51,56 @@ if (res2) {
 }
 ```
 
+## 利用 Promise 做并发限制
+
+```js
+const asyncTask = (t, taskName) => {
+  return new Promise(resolve => {
+    console.log(`开始执行 ${taskName} ~~~`);
+    setTimeout(() => {
+      console.log(`${taskName} 结束啦 !!!`);
+      resolve()
+    }, t);
+  })
+}
+
+const taskList = [
+  () => asyncTask(100, 'task1'),
+  () => asyncTask(300, 'task2'),
+  () => asyncTask(500, 'task3'),
+  () => asyncTask(200, 'task4'),
+  () => asyncTask(700, 'task5'),
+  () => asyncTask(400, 'task6'),
+]
+
+/**
+ * 异步任务并发限制
+ * @param {*} tasks 任务总数
+ * @param {*} limit 最大并发限制数量
+ */
+const limmitTaskPool = async (tasks, limit) => {
+
+  const taskPool = new Set()
+  for (const task of tasks) {
+    // 执行
+    const promise = task()
+    // 添加到任务池中
+    taskPool.add(promise)
+    // 异步任务,会在同步任务执行完再执行, 删除已执行完的任务
+    promise.then(() => taskPool.delete(promise))
+    // 任务池的数量大于等于并发限制
+    if (taskPool.size >= limit) {
+      // 超出限制,需要先执行一个最快的异步任务(等待异步任务执行完删除自身空出任务池),再执行下一个任务
+      await Promise.race(taskPool)
+    }
+  }
+  // 这一步是为了让剩下所有任务执行完再返回, 不需要获取所有任务执行完的状态可以省略
+  return Promise.all(taskPool)
+}
+
+limmitTaskPool(taskList, 2).then(() => console.log('所有任务全部执行完毕!'))
+```
+
 ## promiseA+
 
 - promise.all 可以让多个异步的接口并发执行，在接口数量很多的时候大大加快请求的速度
@@ -253,3 +303,5 @@ resolvePromise 里判断判断是值还是函数，是函数就在调用，是�
             console.log('all resolved')
         });
 ```
+
+···
