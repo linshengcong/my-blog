@@ -342,3 +342,64 @@ const handler = {
 
 const obj = new Proxy({}, handler);
 ```
+
+## Vue nextTick (源码及其解析)
+
+```js
+if (typeof Promise !== 'undefined' && isNative(Promise)) {
+  const p = Promise.resolve()
+  timerFunc = () => {
+    p.then(flushCallbacks)
+    /**
+     * 有的UIWebViews 中，Promise.then并没有完全中断，回调被推送到微任务队列，但队列并没有被刷新，
+     * 直到浏览器需要做一些其他工作，例如处理一个定时器。因此，我们通过添加一个空的定时器来 "强迫 "微任务队列被刷新
+     */
+    if (isIOS) setTimeout(noop)
+  }
+  isUsingMicroTask = true
+} else if 
+  (
+    !isIE 
+    && typeof MutationObserver !== 'undefined' 
+    && (isNative(MutationObserver) || MutationObserver.toString() === '[object  MutationObserverConstructor]')
+  )
+{
+  /**
+   * Promise 不能用, 就使用 MutationObserver 降级
+   * 创建一个文本节点并监听, 执行函数时修改文本, observer 触发回调函数
+   */
+  let counter = 1
+  const observer = new MutationObserver(flushCallbacks)
+  const textNode = document.createTextNode(String(counter))
+  observer.observe(textNode, {
+    characterData: true
+  })
+  timerFunc = () => {
+    counter = (counter + 1) % 2
+    textNode.data = String(counter)
+  }1768 2435  (9 11 10 12)
+  isUsingMicroTask = true
+} else if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
+  /**
+   * 降级使用 setImmediate, 同属于宏任务, 但是比setTimeout 合适
+   * 
+   * 执行顺序：setImmediate 的任务总是在 setTimeout 之前执行。这是因为 setImmediate 会在当前事件循环的末尾插入任务，
+   * 而 setTimeout 则需要等待指定的时间间隔后才会执行。因此，如果你希望任务尽快执行而无需延迟，setImmediate 是更好的选择。
+   * 
+   * 性能影响：使用 setTimeout 设置一个延迟时间为 0 的任务并不意味着它会立即执行。它仍然需要等待至少 1 毫秒才会被执行。
+   * 而 setImmediate 会在当前事件循环的末尾立即执行任务，因此它的性能更高效。
+   * 
+   * 递归调用：当你在一个任务中递归调用 setImmediate，它会允许事件循环在每个递归步骤之间插入其他的 I/O 事件。
+   * 这有助于避免事件循环阻塞，使得其他异步操作有机会执行。
+   * 而使用 setTimeout 进行递归调用可能会导致连续的任务堆积在事件循环中，影响性能和响应性。
+   */
+  timerFunc = () => {
+    setImmediate(flushCallbacks)
+  }
+} else {
+  // 降级使用 setTimeout.
+  timerFunc = () => {
+    setTimeout(flushCallbacks, 0)
+  }
+}
+```
