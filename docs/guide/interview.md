@@ -1274,3 +1274,46 @@ JS任务又分为宏任务和微任务。
 - 在宏任务和微任务同时存在的情况下，微任务会优先执行。只有当所有微任务执行完毕后，才会选择执行下一个宏任务。这个顺序确保了微任务能够及时执行，以便在下一个渲染步骤之前进行更新。
 
 - 在JS 中, 由于开始读取脚本需要 script 标签, script 脚本是宏任务，他执行是因为当前的微任务队列是空，而宏任务队列只有script这个任务，再清空微任务队列（此时没有任何任务），然后开始执行script里面的代码
+
+## BFC （Block Formatting Context）
+
+- 块级格式化上下文是 Web 页面中的一块渲染区域，并且有一套渲染规则，它决定了其子元素将如何定位，以及和其他元素的关系和相互作用。
+- 具有 BFC 特性的元素可以看作是隔离了的独立容器，容器里面的元素不会在布局上影响到外面的元素，并且 BFC 具有普通容器所没有的一些特性。
+- 格式化上下文影响布局，通常，我们会为定位和清除浮动创建新的 BFC，而不是更改布局，因为它将：
+
+1. 包含内部浮动(内部浮动的元素被外部盒子包裹着, 不会脱离文档流, 会撑开外部盒子, 常见场景浮动塌陷)
+2. 排除外部浮动(使外部浮动元素不会重叠到一起)
+3. 阻止外边距重叠(两个盒子之间margin 重叠时分开)
+
+tips: （display：flex/grid/inline-flex）建立新的 flex/grid 格式上下文，除布局之外，它与块格式上下文类似。flex/grid 容器中没有可用的浮动子级，但排除外部浮动和阻止外边距重叠仍然有效。
+
+### 创建BFC 的方式
+
+1. 根元素（`<html>`）
+2. 浮动元素（float 值不为 none）
+3. 定位元素（position 值为 absolute 或 fixed）
+4. 行内块元素（display 值为 inline-block）
+5. overflow 值不为 visible、clip 的块元素
+
+### 处理浮动塌陷
+
+```css
+//这种完美
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both
+  }
+//这种通常也可以
+.clearfix:after {
+    content:'';
+    display:block;
+    height:0;
+    line-height:0;
+    clear:both;
+    visibility:hidden;
+}
+```
