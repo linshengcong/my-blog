@@ -403,3 +403,63 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
   }
 }
 ```
+
+## Vue slot (插槽)
+
+### 组件编译流程
+
+- 从根实例入手进行实例的挂载，如果有手写的render函数，则直接进入$mount挂载流程。
+- 只有template模板则需要对模板进行解析，这里分为两个阶段，一个是将模板解析为AST树，另一个是根据不同平台生成执行代码，例如render函数。
+- $mount流程也分为两步，第一步是将render函数生成Vnode树，子组件会以vue-componet-为tag标记，另一步是把Vnode渲染成真正的DOM节点。
+- 创建真实节点过程中，如果遇到子的占位符组件会进行子组件的实例化过程，这个过程又将回到流程的第一步。
+
+- 父组件会优先于子组件进行实例的挂载，接下来是render函数生成Vnode，在这个阶段会遇到子的占位符节点(即：child),因此会为子组件创建子的Vnode。
+- 子组件也会走一遍这个流程
+- [详情查看Vue插槽源码](https://juejin.cn/post/6844903927129849864)
+
+### 作用域插槽
+
+- 作用域内的插槽允许我们父组件中的插槽内容访问仅在子组件中找到的数据。
+- 使用v-bind让slot内容可以使用绑定属性, 这些有界属性称为slot props。
+- 在父级作用域中使用v-slot访问slot属性
+
+```vue
+// Exaple
+// ChidComponent.vue
+<template>
+  <div>
+    <div>some txt...</div>
+    // 默认展示title
+    <div  v-for="item in items">
+      <slot v-bind:item="item"> {{ item.title }} </slot> 
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      items: [{
+        title: 'title',
+        description: 'description',
+      }]
+    }
+  },
+}
+</script>
+```
+
+```vue
+// ParentComponent.vue 
+<template>
+  <div>
+    <child-component >
+      <template #item="{ title, description }"> // v-slot 可简写成 #default
+        {{ title }}
+        {{ description }}
+      </template>
+    </child-component>
+  </div>
+</template>
+```
