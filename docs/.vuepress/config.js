@@ -6,8 +6,8 @@ const getFileNames = parentFileName => {
   const files = fs.readdirSync(`./docs/${parentFileName}`)
   const res = []
   files.forEach(fileName => {
-    const blacklist = ['project', 'interview']
-    if ((process.env.NODE_ENV !== 'development' && fileName.includes(blacklist))) return
+    const blacklist = ['project.md', 'interview.md']
+    if ((process.env.NODE_ENV !== 'development' && blacklist.includes(fileName))) return
     if (pathModule.extname(fileName) === '.md') {
       const path = fileName.slice(0, fileName.length - 3)
       res.push(parentFileName + '/' + path)
