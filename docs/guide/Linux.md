@@ -46,6 +46,144 @@ scp  -r <本地文件夹名> <用户名>@<ssh服务器地址>:<上传保存路�
 
 `ssh-copy-id -i ~/.ssh/id_rsa.pub root@43.138.216.38`
 
+## 常用 shell 指令
+
+- 注意shell 要求空格格式严格
+
+```shell
+# var1=var2 赋值
+version="v101"
+
+# ehco var 打印
+ehco $version
+
+# $(var)命令替换,会先完成内部的命令行,然后将其结果替换出来,再重组成新的命令行
+$(node -v)
+
+# ${var} or $var 变量替换, 变量取值
+$version
+
+# 定义字符数组
+A=(a b c def)  
+
+# 条件表达式
+if [ $var1 == $var2 ]; 
+then echo $var1
+else echo $var2
+fi
+```
+
+### 根据不同项目, 使用不同nodejs 版本并启动
+
+```sh
+target_version="v14.19.0"
+echo ${target_version}
+
+current_version=$(node -v)
+echo $current_version
+
+if [ ${current_version} == ${target_version} ]; then
+  n '14.19.0'
+fi
+npm run serve
+```
+
+- 使用shelljs 实现
+
+```js
+const shell = require('shelljs')
+if (process.versions['node'] !== '14.19.0') {
+  shell.exec('n 14.19.0')
+}
+shell.exec('npm run serve')
+```
+
+### 前端环境打包部署发布通知
+
+```sh
+PROFILE=$1
+token=$2
+
+# 工作目录
+src_root=$(pwd)
+app_name=xxx
+node_modules_path=/usr/lib/jenkins/jenkins_home/node/xxx
+
+# 项目打包
+cd $src_root
+cp -rf ./package.json $node_modules_path
+cd $node_modules_path
+npm i
+cd $src_root
+ln -s $node_modules_path/node_modules node_modules
+npm run build:$PROFILE
+rm -rf ./node_modules
+
+# 构建docker镜像
+mirror_tag=''
+source_nginx_conf=''
+target_nginx_conf=./nginx/conf.d/app.conf
+if [ ${PROFILE} == 'test' ]; then
+    mirror_tag=test
+    host='https://testwebpc.xxx.com'
+    source_nginx_conf=./nginx/conf.d/test.conf
+elif [ ${PROFILE} == 'stage' ]; then
+    mirror_tag=test
+    host='https://prewebpc.xxx.com'
+    source_nginx_conf=./nginx/conf.d/stage.conf
+elif [ ${PROFILE} == 'prod' ]; then
+    mirror_tag=pro
+    host='https://www.xxx.com'
+    source_nginx_conf=./nginx/conf.d/prod.conf
+fi
+mv $source_nginx_conf $target_nginx_conf
+docker build -t registry-vpc.cn-shenzhen.aliyuncs.com/stl-${mirror_tag}/$app_name:$PROFILE .
+docker push registry-vpc.cn-shenzhen.aliyuncs.com/stl-${mirror_tag}/$app_name:$PROFILE
+
+# 部署服务
+curl https://cs.console.aliyun.com/hook/trigger?token=$token
+
+# 钉钉通知
+webhook='https://oapi.dingtalk.com/robot/send?access_token=xxx'
+title="web前端项目发布了，环境：$PROFILE"
+text="web前端项目发布了，环境：$PROFILE \n\n [单击打开]($host) \n\n 更新说明:  \n\n$NOTE  \n\n"
+curl $webhook \
+    -H "Content-Type: application/json" \
+    -d "{\"msgtype\": \"markdown\",
+    \"markdown\":{
+    \"title\":\"$title\",
+    \"text\":\"$text\"
+}}"
+
+webhook='https://oapi.dingtalk.com/robot/send?access_token=xxx'
+curl $webhook \
+    -H "Content-Type: application/json" \
+    -d "{\"msgtype\": \"markdown\",
+            \"markdown\":{
+            \"title\":\"$title\",
+            \"text\":\"$text\"
+        }}"
+
+```
+
+### docker 启动
+
+```sh
+cp -rf ./nginx/conf.d/prod.conf ./nginx/conf.d/app.conf
+npm i
+npm run build:test
+app_name=xxx
+version=v1
+image_name=$app_name:$version
+docker stop $app_name
+docker rm $app_name
+docker rmi -f $image_name
+docker build -t $image_name .
+rm -f ./nginx/conf.d/app.conf
+echo 'run on http://192.168.5.38:8081 http://localhost:8081'
+docker run  -p 8081:80 --name $app_name $image_name  
+```
+
 ## 快速登录：ssh-config
 
 - (背景) 在本地环境上配置 ssh-config, 给自己服务器起个别名, 可以不用去记IP
