@@ -492,6 +492,31 @@ if (!Array.prototype.forEach) {
 }
 ```
 
+## 实现forEach map
+
+```js
+// map
+Array.prototype._m = function(callback, instance) {
+    if (typeof callback !== 'function') {
+        throw new Error('必须传入一个函数')
+    }
+    const result = []
+    for(let i = 0; i < this.length; i++) {
+        result[i] = callback.call(instance, this[i], i, this)
+    }
+    return result
+}
+// forEach
+Array.prototype._m = function(callback, instance) {
+    if (typeof callback !== 'function') {
+        throw new Error('必须传入一个函数')
+    }
+    for(let i = 0; i < this.length; i++) {
+        callback.call(instance, this[i], i, this)
+    }
+}
+```
+
 ## JSON 合并
 
 - 把 [{ a: 1, b: 2018 }, { a: 2, b: 2019 }, { a: 3, b: 2019 }, { a: 4, b: 2019 }]
