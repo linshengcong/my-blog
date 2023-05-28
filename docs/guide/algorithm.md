@@ -175,3 +175,160 @@ console.log(value3);
 
 如果所有函数的调用都是尾调用，即只保留内层函数的调用帧，做到每次执行时（例如递归操作），一个调用栈中调用帧只有一项，那么调用栈的长度就会小很多，这样需要占用的内存也会大大减少。这就是尾调用优化的含义。
 ```
+
+## 大数相加 (差值法)
+
+```js
+/**
+ * 
+ * 输入：nums = [2,7,11,15], target = 9
+ * 输出：[0,1]
+ * 解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1]
+ */
+var twoSum = function (nums, target) {
+  const map = new Map()
+  for (i = 0; i < nums.length; i++) {
+    const n = nums[i]
+    const diff = target - n
+    if (map.get(diff) !== undefined) {
+      return [map.get(diff), i]
+    } else {
+      map.set(n, i)
+    }
+  }
+};
+```
+
+## 回文数 (头尾双指针)
+
+```js
+var isPalindrome = function(x) {
+  const nums = String(x).split('')
+  const len = nums.length
+  const halfLen = Math.floor(nums.length / 2)
+  for (let i = 0; i < nums.length; i++) {
+    if (nums[i] !== nums[len - 1 - i]) return false
+    if (i === halfLen) return true
+  }
+};
+```
+
+## 有效括号
+
+```js
+/**
+ * s = '({})]['
+ */
+var isValid = function (s) {
+  const map = {
+    '}': '{',
+    ']': '[',
+    ')': '('
+  }
+  const stack = []
+  const arr = s.split('')
+  for (let i = 0; i < arr.length; i++) {
+    if (arr.length % 2 !== 0) return false
+    const s = arr[i]
+    const lastStr = stack[stack.length - 1]
+    if (!lastStr) {
+      stack.push(s)
+      continue
+    }
+    if (lastStr === map[s]) stack.pop()
+    else stack.push(s)
+  }
+  return !stack.length
+};
+```
+
+## 反转链表
+
+```js
+输入：head = [1,2,3,4,5]
+输出：[5,4,3,2,1]
+/*function ListNode(x){
+    this.val = x;
+    this.next = null;
+}*/
+//时间复杂度O(n),空间复杂度O(1)
+function ReverseList(pHead) {
+  //保存当前结点
+  let cur = pHead;
+  if (cur === null || cur.next === null) return cur;
+  let prev = null; //前一个结点
+  let next = null; //下一个结点
+  while (cur) {
+    next = cur.next; //保存下一个结点
+    cur.next = prev; //当前结点的下一个结点指向前面的节点
+    prev = cur; //把所有节点往后挪
+    cur = next;
+  }
+  return prev;
+}
+/**------------------------------**/
+//时间复杂度O(n),空间复杂度O(n)
+function ReverseList(pHead) {
+  //把链表存到数组中
+  let node = pHead;
+  let ary = [];
+  while (node) {
+    ary.push(node.val);
+    node = node.next; //指向下一个结点
+  }
+  node = pHead;
+  while (node) {
+    node.val = ary.pop();
+    node = node.next;
+  }
+  return pHead;
+}
+```
+
+## 无重复字符的最长子串(滑动窗口)
+
+```js
+/**
+ * 滑动窗口 快慢指针
+ * 时间复杂度 O(n)
+ * 每次右指针走一步, 用一个 map 存储每个字符的index,
+ * 当字符重复时, 更新map 里字符的 index, 确定最长的非重复字符, 左边 * 指针走一步
+ */
+const lengthOfLongestSubstring = function (s) {
+  const map = new Map()
+  let left = 0
+  let right = 0
+  let len = 0
+
+  while (right < s.length) {
+    const char = s.charAt(right)
+    const charIndex = map.get(char)
+    if (charIndex === undefined) {
+      // 右指针指向的字符不存在时，以字符为键，保存其下标，并继续迭代
+      map.set(char, right)
+    } else {
+      // 存在重复值, 更新重复字符的下标, 确定一个最长距离
+      map.set(char, right)
+      /**
+       * 因为每次左指针变动都已经确定了当前左指针至右指针的最长区间
+       * 重复字符的索引值如果小于左指针的情况, 必定不可能产生更大的最长区间
+       * 故跳过这种情况, 没有意义
+       */
+      if (charIndex >= left) {
+        len = Math.max(len, right - left)
+        /**
+         * 左指针, 指向重复字符位置的下一个字符, 确定一个当前可能的最长区间
+         * 去等待下一个新的最长非重复字符
+         */
+        left = charIndex + 1
+      }
+    }
+    // 当左指针到终点的距离小于现存最大长度, 就没有后续比较的必要了
+    if ((s.length - left) < len) break
+    // 每次右指针向后走一格
+    right++
+  }
+  // 最后对比最大长度 和 最后左右指针的差额, 因为有这一步, 所以 charIndex < left 的可能性不用考虑, 因为最后会比较
+  return Math.max(len, right - left)
+}
+```
