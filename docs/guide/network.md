@@ -128,7 +128,68 @@ sposeMessage(data) {
 
 ## http
 
-## https
+状态码
+
+- 200 ok 成功
+- 201 Created 添加成功
+- 301 永久重定向
+- 302 临时重定向
+- 304 Not Modified 未改变，走缓存
+- 400 Bad Request 语法无效
+- 401 没权限 缺乏目标资源要求
+- 402 payment reqired 需要付费
+- 403 没权限 拒绝授权访问 如密码错误
+- 404 **`Not Found`**， 服务端找不到这个资源
+- 500 Internal Server Error 服务端错误
+- 501 Not Implemented 请求方法不被支持
+- 502 bad getaway 网关错误
+- 504 Gateway Timeout 网关超时
+
+**一次完整的HTTP事务是怎样一个过程？**
+
+　　1）域名解析
+
+　　2） 发起TCP的3次握手
+
+　　3） 建立TCP连接后发起http请求
+
+　　4） 服务器响应http请求，浏览器得到html代码
+
+　　5） 浏览器解析html代码，并请求html代码中的资源（如js、css、图片等）
+
+　　6） 浏览器对页面进行渲染呈现给用户
+
+**关于Http 2.0 你知道多少**
+
+- HTTP/2引入了“服务端推（server push）”的概念，它允许服务端在客户端需要数据之前就主动地将数据发送到客户端缓存中，从而提高性能。
+- HTTP/2提供更多的加密支持
+- HTTP/2使用多路技术，允许多个消息在一个连接上同时交差。
+- 它增加了头压缩（header compression），因此即使非常小的请求，其请求和响应的header都只会占用很小比例的带宽
+
+**TCP和UDP的区别**
+
+- TCP（Transmission Control Protocol，传输控制协议）是基于连接的协议，也就是说，在正式收发数据前，必须和对方建立可靠的连接。一个TCP连接必须要经过三次“对话”才能建立起来
+- UDP（User Data Protocol，用户数据报协议）是与TCP相对应的协议。它是面向非连接的协议，它不与对方建立连接，而是直接就把数据包发送过去！ UDP适用于一次只传送少量数据、对可靠性要求不高的应用环境
+
+### GET 和 POST 的区别
+
+GET的语义是请求获取指定的资源。GET方法是安全、幂等、可缓存的（除非有 Cache-ControlHeader的约束）,GET方法的报文主体没有任何语义。
+
+POST的语义是根据请求负荷（报文主体）对指定的资源做出处理，具体的处理方式视资源类型而不同。POST不安全，不幂等，（大部分实现）不可缓存。为了针对其不可缓存性，有一系列的方法来进行优化，以后有机会再研究（FLAG已经立起）。
+
+> GET后退按钮/刷新无害，POST数据会被重新提交（浏览器应该告知用户数据会被重新提交）。
+> GET书签可收藏，POST为书签不可收藏。
+> GET能被缓存，POST不能缓存 。
+> GET编码类型application/x-www-form-url，POST编码类型encodedapplication/x-www-form-urlencoded 或 multipart/form-data。为二进制数据使用多重编码。
+> GET历史参数保留在浏览器历史中。POST参数不会保存在浏览器历史中。
+> GET对数据长度有限制，当发送数据时，GET 方法向 URL 添加数据；URL 的长度是受限制的（URL 的最大长度是 2048 个字符）。POST无限制。
+> GET只允许 ASCII 字符。POST没有限制。也允许二进制数据。
+> 与 POST 相比，GET 的安全性较差，因为所发送的数据是 URL 的一部分。在发送密码或其他敏感信息时绝不要使用 GET ！POST 比 GET 更安全，因为参数不会被保存在浏览器历史或 web 服务器日志中。
+> GET的数据在 URL 中对所有人都是可见的。POST的数据不会显示在 URL 中。
+
+## https 原理
+
+- https其实就是在http 和 tcp中加一层 SSL 协议
 
 ## http2
 

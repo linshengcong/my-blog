@@ -309,51 +309,6 @@ export default {
 </script>
 ```
 
-## http
-
-状态码
-
-- 200 ok 成功
-- 201 Created 添加成功
-- 301 永久重定向
-- 302 临时重定向
-- 304 Not Modified 未改变，走缓存
-- 400 Bad Request 语法无效
-- 401 没权限 缺乏目标资源要求
-- 402 payment reqired 需要付费
-- 403 没权限 拒绝授权访问 如密码错误
-- 404 **`Not Found`**， 服务端找不到这个资源
-- 500 Internal Server Error 服务端错误
-- 501 Not Implemented 请求方法不被支持
-- 502 bad getaway 网关错误
-- 504 Gateway Timeout 网关超时
-
-**一次完整的HTTP事务是怎样一个过程？**
-
-　　1）域名解析
-
-　　2） 发起TCP的3次握手
-
-　　3） 建立TCP连接后发起http请求
-
-　　4） 服务器响应http请求，浏览器得到html代码
-
-　　5） 浏览器解析html代码，并请求html代码中的资源（如js、css、图片等）
-
-　　6） 浏览器对页面进行渲染呈现给用户
-
-**关于Http 2.0 你知道多少**
-
-- HTTP/2引入了“服务端推（server push）”的概念，它允许服务端在客户端需要数据之前就主动地将数据发送到客户端缓存中，从而提高性能。
-- HTTP/2提供更多的加密支持
-- HTTP/2使用多路技术，允许多个消息在一个连接上同时交差。
-- 它增加了头压缩（header compression），因此即使非常小的请求，其请求和响应的header都只会占用很小比例的带宽
-
-**TCP和UDP的区别**
-
-- TCP（Transmission Control Protocol，传输控制协议）是基于连接的协议，也就是说，在正式收发数据前，必须和对方建立可靠的连接。一个TCP连接必须要经过三次“对话”才能建立起来
-- UDP（User Data Protocol，用户数据报协议）是与TCP相对应的协议。它是面向非连接的协议，它不与对方建立连接，而是直接就把数据包发送过去！ UDP适用于一次只传送少量数据、对可靠性要求不高的应用环境
-
 ## vue 和 react 区别
 
 1. 数据是不是可变的
@@ -361,15 +316,31 @@ export default {
 3. 类式的组件写法还是声明式的写法
 4. 什么功能内置，什么交给社区去做
 
-## Cookie和LocalStorage的区别
+## Cookie & LocalStorage & SessionStorage difference
 
-1.Cookie会被浏览器带到服务器，LocalStorage跟HTTP无关，不会被浏览器带到服务器，一个域20条。
+### Cookie
 
-2.cookie会附带在HTTP请求头所以容量比较小，最大存储量为4k，LocalStorage的最大存储量为5M左右。
+1. 会随着http请求自动带到服务端, 设置httpOnly 则只有服务端能修改
+2. 限制大小4k
+3. 可以设置过期时间
+4. 作用域由 domain 属性和 path 属性共同决定
+5. Cookie 的作用域由 domain 属性和 path 属性共同决定, 如果将 Cookie 的 domain 属性设置为当前域的父域，所有子域都能共享父域的Cookie, 这样子域之间就能共享Cookie, 利用这一特性可以做OSS 登陆或者各个子域名下系统的登陆态打通(注意加密)
 
-3.Cookie可以由服务端和js读写（如果设置了HttpOnly的话js无法读）,localStorage只能是js读写。
+### LocalStorage
 
-## XSS攻击
+1. 没有过期时间, 不手动清理永久存储在硬盘里
+2. 最大存储量为5M左右
+3. 作用域为同源页面下
+
+### ssesionStorage
+
+1. 过期时间的生命周期为会话级别, 关闭页面就销毁, 刷新不会销毁
+2. 最大存储量为5M左右
+3. 作用域为同源页面下的独立窗口内, 如果通过window.open 或 a标签打开同源页面, 会复制当前会话的上下文作为新会话的上下文, 之后相互隔离.如果是新开一个tab 页输入url, 则不会复制会话上下文
+
+## 前端网络安全
+
+### XSS攻击
 
 - XSS(Cross-Site Scripting，跨站脚本攻击)是一种代码注入攻击。攻击者在目标网站上注入恶意代码，当被攻击者登陆网站时就会执行这些恶意代码，这些脚本可以读取 cookie，session tokens，或者其它敏感的网站信息，对用户进行钓鱼欺诈，甚至发起蠕虫攻击等。
 
@@ -381,14 +352,19 @@ export default {
 - 当用户需要输入 HTML 代码时：匹配白名单，重新构建 HTML 元素树。
 - 我之前写一个评论的功能，里面可以输入表情，表情是用图片展示不是用emoji，要上传图片放在下方，所以文字评论内容的地方，我先用[]把表情匹配出来，然后创建一个 documentFragment文档片段，是表情且和表情库匹配的创建一个img元素，其他的用createNodeText创建元素，然后appendChild（）插入。
 
-## csrf攻击
+### csrf攻击
 
 CSRF（Cross-site request forgery）跨站请求伪造：攻击者诱导受害者进入第三方网站，在第三方网站中，向被攻击网站发送跨站请求。利用受害者在被攻击网站已经获取的注册凭证，绕过后台的用户验证，达到冒充用户对被攻击的网站执行某项操作的目的。
 CSRF 可以简单理解为：攻击者盗用了你的身份，以你的名义发送恶意请求，容易造成个人隐私泄露以及财产安全。
 
-我们项目的接口有使用 token和签名
+1. 因为csrf 通常都是第三方的网站, 直接通过http origin、http refrence 过去第三方域名的请求
+2. 我们项目还在请求头使用了特定的签名access token
+时间戳 + 随机数 + uid + 语言 + clientType 放到请求头里, 同时加token 加盐再用特定格式拼接起来输出一个字符串再用 MD5加密形成 accessToken 放到请求头里, 服务端每次同样加密再对比access token 确定是否本人
+get post 请求, 把入参sort 排序后再加盐再用特定格式输出一个字符串md5 加密, 形成一个签名, 防止参数被串改
 
-## 深浅拷贝
+## 常见手写题
+
+### 深浅拷贝
 
 ```js
 let obj = {
@@ -426,7 +402,7 @@ function deepClone(origin, target) {
     deepClone(obj, obj1)
 ```
 
-## forEach polyfill
+### forEach polyfill
 
 ```js
 if (!Array.prototype.forEach) {
@@ -492,7 +468,7 @@ if (!Array.prototype.forEach) {
 }
 ```
 
-## 实现forEach map
+### 实现forEach map
 
 ```js
 // map
@@ -517,7 +493,7 @@ Array.prototype._m = function(callback, instance) {
 }
 ```
 
-## JSON 合并
+### JSON 合并
 
 - 把 [{ a: 1, b: 2018 }, { a: 2, b: 2019 }, { a: 3, b: 2019 }, { a: 4, b: 2019 }]
 - 转换成[{a: 1, b: 2018}, {a: 9, b: 2019, children:  {a: 2, b: 2019}, {a: 3, b: 2019},{a: 4, b: 2019}]  格式
@@ -546,7 +522,7 @@ Array.prototype._m = function(callback, instance) {
   const result = Object.values(map);
 ```
 
-## 求一串字母中频率出现最高的值
+### 求一串字母中频率出现最高的值
 
 ```js
     const str = 'aahdffff'
@@ -574,7 +550,7 @@ Array.prototype._m = function(callback, instance) {
     }
 ```
 
-## 模拟call
+### 模拟call
 
 ```js
     var name = "Hero";
@@ -608,7 +584,7 @@ Array.prototype._m = function(callback, instance) {
     fun._call(obj, 1, 2, 3);
 ```
 
-## new 一个对象发生了什么
+### new 一个对象发生了什么
 
 ```js
 1、创建一个空对象 （好理解）
@@ -662,7 +638,7 @@ for(var i=0; i<100; i++){
 }
 ```
 
-## 防抖
+### 防抖
 
 ```html
   <input id="search" name="">
@@ -688,7 +664,7 @@ for(var i=0; i<100; i++){
 </script>
 ```
 
-## 节流(**throttle**)
+### 节流(**throttle**)
 
 ```js
         document.getElementById('search').addEventListener('input', throttle(HHH, 1000))
@@ -736,22 +712,6 @@ for(var i=0; i<100; i++){
 > 2.然后将A.prototype的引用放置到该对象的原型链上。即a.__proto__指向 A.prototype
 > 3.执行A函数，将A中this指向该对象，执行结束，如果没有return那么默认返回this引用
 
-## GET 和 POST 的区别
-
-GET的语义是请求获取指定的资源。GET方法是安全、幂等、可缓存的（除非有 Cache-ControlHeader的约束）,GET方法的报文主体没有任何语义。
-
-POST的语义是根据请求负荷（报文主体）对指定的资源做出处理，具体的处理方式视资源类型而不同。POST不安全，不幂等，（大部分实现）不可缓存。为了针对其不可缓存性，有一系列的方法来进行优化，以后有机会再研究（FLAG已经立起）。
-
-> GET后退按钮/刷新无害，POST数据会被重新提交（浏览器应该告知用户数据会被重新提交）。
-> GET书签可收藏，POST为书签不可收藏。
-> GET能被缓存，POST不能缓存 。
-> GET编码类型application/x-www-form-url，POST编码类型encodedapplication/x-www-form-urlencoded 或 multipart/form-data。为二进制数据使用多重编码。
-> GET历史参数保留在浏览器历史中。POST参数不会保存在浏览器历史中。
-> GET对数据长度有限制，当发送数据时，GET 方法向 URL 添加数据；URL 的长度是受限制的（URL 的最大长度是 2048 个字符）。POST无限制。
-> GET只允许 ASCII 字符。POST没有限制。也允许二进制数据。
-> 与 POST 相比，GET 的安全性较差，因为所发送的数据是 URL 的一部分。在发送密码或其他敏感信息时绝不要使用 GET ！POST 比 GET 更安全，因为参数不会被保存在浏览器历史或 web 服务器日志中。
-> GET的数据在 URL 中对所有人都是可见的。POST的数据不会显示在 URL 中。
-
 ## 跨域
 
 1. Window
@@ -785,35 +745,6 @@ callback({a:1, b:2}); // 后端需要传递的数据直接作为调用参数
 
 <https://www.jianshu.com/p/7e072d416d65>
 
-## 浏览器的渲染过程
-
-- 解析HTML 生成DOM树
-- 解析css 生成css渲染树
-- 布局渲染树，获取宽高坐标等
-- 开始渲染
-
-## https 原理
-
-- https其实就是在http 和 tcp中加一层 SSL 协议
-
-## 回流重绘优化 会使cpu使用率上升 niko and
-
-### html 加载时发生了什么
-
-在页面加载时，浏览器把获取到的HTML代码解析成1个DOM树，DOM树里包含了所有HTML标签，包括display:none隐藏，还有用JS动态添加的元素等。
- 浏览器把所有样式(用户定义的CSS和用户代理)解析成样式结构体
- DOM Tree 和样式结构体组合后构建render tree, render tree类似于DOM tree，但区别很大，因为render tree能识别样式，render tree中每个NODE都有自己的style，而且render tree不包含隐藏的节点(比如display:none的节点，还有head节点)，因为这些节点不会用于呈现，而且不会影响呈现的，所以就不会包含到 render tree中。我自己简单的理解就是DOM Tree和我们写的CSS结合在一起之后，渲染出了render tree。
-
-### 什么是回流
-
-当render tree中的一部分(或全部)因为元素的规模尺寸，布局，隐藏等改变而需要重新构建。这就称为回流(reflow)。每个页面至少需要一次回流，就是在页面第一次加载的时候，这时候是一定会发生回流的，因为要构建render tree。在回流的时候，浏览器会使渲染树中受到影响的部分失效，并重新构造这部分渲染树，完成回流后，浏览器会重新绘制受影响的部分到屏幕中，该过程成为重绘。
-
-### 什么是重绘
-
-当render tree中的一些元素需要更新属性，而这些属性只是影响元素的外观，风格，而不会影响布局的，比如background-color。则就叫称为重绘。
-
-使用一些 transform opacity filters 动画不会导致回流 GPU加速 硬件加速 will-change 动画写到bfc中，以免影响标准流 vuex-persist
-
 ## 内存泄漏
 
 1. 频繁操作iframe
@@ -821,53 +752,6 @@ callback({a:1, b:2}); // 后端需要传递的数据直接作为调用参数
 3. 事件绑定
 4. 全局变量
 5. 闭包
-
-## Cache 和 Buffer
-
-- cache 解决时间问题 —— 不够快，用空间换时间。
-
-  buffer 解决空间问题 —— 不够大，用时间换空间。
-
-  一个是哈希，一个是队列
-  一个是二八法则，一个是速度匹配
-  一个是冷热置换，一个随用随清
-
-- Buffer中的数据是一定要在短时间内被处理的，而Cache则可以作为一个数据的长期的容器而其中的数据不一定非要被立刻处理
-
-- 一般点操作比批操作慢呢？因为做事是有**overhead**的，**在这些应用场景中，每次做的事不管多还是少，overhead都差不多，所以我们尽量每次做得多一点，这样总体的overhead就少了，总体速度就上去了。**当然，Buffer也会带来不好的问题，那就是可能使操作的时延变大... 虽然吞吐上去了，但是时延可能也上去了~
-
-## BFC
-
-**块格式化上下文（Block Formatting Context，BFC）** 是Web页面的可视CSS渲染的一部分，是块盒子的布局过程发生的区域，也是浮动元素与其他元素交互的区域。
-
-## 浮动塌陷
-
-- 父元素没有设置高度，子元素设置float，就会产生浮动塌陷，需要清除浮动。
-  - 就可以触发BFC来清除浮动，通常是父盒子设置 `overflow: auto`。
-  - 设置 `overflow: auto` 创建一个新的BFC来包含这个浮动。
-
-关于清除浮动，实际上我会用这一种
-
-```css
-//这种完美
-  .clearfix:before,
-  .clearfix:after {
-    display: table;
-    content: "";
-  }
-  .clearfix:after {
-    clear: both
-  }
-//这种通常也可以
-.clearfix:after {
-    content:'';
-    display:block;
-    height:0;
-    line-height:0;
-    clear:both;
-    visibility:hidden;
-}
-```
 
 ## js 原型链、作用域链、闭包特性
 
@@ -1254,6 +1138,31 @@ data() {
 
 - 文档片段, dom 批量更新时使用
 - DocumentFragment节点不属于文档树，存在于内存中，并不在DOM中，所以将子元素插入到文档片段中时不会引起页面回流
+
+### 回流重绘优化 会使cpu使用率上升 niko and
+
+#### 浏览器的渲染过程
+
+- 解析HTML 生成DOM树
+- 解析css 生成css渲染树
+- 布局渲染树，获取宽高坐标等
+- 开始渲染
+
+#### html 加载时发生了什么
+
+在页面加载时，浏览器把获取到的HTML代码解析成1个DOM树，DOM树里包含了所有HTML标签，包括display:none隐藏，还有用JS动态添加的元素等。
+ 浏览器把所有样式(用户定义的CSS和用户代理)解析成样式结构体
+ DOM Tree 和样式结构体组合后构建render tree, render tree类似于DOM tree，但区别很大，因为render tree能识别样式，render tree中每个NODE都有自己的style，而且render tree不包含隐藏的节点(比如display:none的节点，还有head节点)，因为这些节点不会用于呈现，而且不会影响呈现的，所以就不会包含到 render tree中。我自己简单的理解就是DOM Tree和我们写的CSS结合在一起之后，渲染出了render tree。
+
+#### 什么是回流
+
+当render tree中的一部分(或全部)因为元素的规模尺寸，布局，隐藏等改变而需要重新构建。这就称为回流(reflow)。每个页面至少需要一次回流，就是在页面第一次加载的时候，这时候是一定会发生回流的，因为要构建render tree。在回流的时候，浏览器会使渲染树中受到影响的部分失效，并重新构造这部分渲染树，完成回流后，浏览器会重新绘制受影响的部分到屏幕中，该过程成为重绘。
+
+#### 什么是重绘
+
+当render tree中的一些元素需要更新属性，而这些属性只是影响元素的外观，风格，而不会影响布局的，比如background-color。则就叫称为重绘。
+
+使用一些 transform opacity filters 动画不会导致回流 GPU加速 硬件加速 will-change 动画写到bfc中，以免影响标准流 vuex-persist
 
 ## JS EventLoop
 
