@@ -116,6 +116,81 @@ if (window.Vue) {
 
 ## 登录
 
+http 是无状态的，也就是请求和请求之间没有关联，但我们很多功能的实现是需要保存状态的。
+
+### session + cookie(服务端存储)
+
+- 设置 httpOnly, 不让客户端修改cookie
+- 给 http 添加状态，那就给每个请求打上个sessionId 放到cookie 里面，然后在服务端根据sessionId存储这个标记对应的数据。
+
+#### CSRF
+
+- 因为 cookie 会在请求时自动带上，那你在一个网站登录了，再访问别的网站，万一里面有个按钮会请求之前那个网站的，那 cookie 依然能带上。而这时候就不用再登录了。
+
+- 解决方案, 验证 origin 和 referer, 但是也能被伪造, 所以会生成一个token, 放在header 里面
+
+#### 分布式session
+
+session 是把状态数据保存在服务端，面对多台服务器如何同步session?
+
+1. 多台服务器自动复制同步session, 比如 java 的 spring-session
+2. 放到redis 里面
+
+#### 跨域
+
+- 因为cookie 跨域是不会自动携带cookie的, 需要客户端手动设置 `withCredentials = true`, 服务端header 设置`Access-Control-Allow-Origin: "当前域名";Access-Control-Allow-Credentials: true`
+
+### JWT(客户端存储, 服务器无状态)
+
+json web token, JWT 是由 header、payload、verify signature组成,
+header 部分保存当前的加密算法，payload 部分是具体存储的数据，verify signature 部分是把 header 和 payload 还有 salt 做一次加密之后生成的。
+
+```js
+/**
+ * header, alg 表示签名的加密算法, type 表示令牌类型.
+ */
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+/**
+ * payload, 实际存储的数据, 除了官方字段也能用自定义业务字段
+ */
+{
+  "jti": "xx", //JWTid
+  "exp": "xx", //过期时间
+  "nbf": "xx", //生效时间
+
+  "name": "John Doe",
+  "admin": true
+}
+// signature, secret 是服务器指定密钥, 用加密算法生成签名
+HMACSHA256(
+  base64UrlEncode(header) + "." +
+  base64UrlEncode(payload),
+  secret)
+```
+
+这三部分都用 Base64URL 算法生成字符串用`.`拼接后 `Header.Payload.Signature`, 放到 headers 里`Authorization: Bearer <token>`
+
+JWT是一个token的规范. 而不是认证系统.
+JWT只提供token的创建和token的验证(这个验证并不是什么认证,而是对JWT本身是否符合 RFC 7519 定义的基本验证).
+首先你要有一个认证系统,再结合JWT.
+而不是JWT代替认证系统.
+RFC明确说JWT用于OpenID和OAuth,而不是代替.
+JWT比自定义token好处就是安全,可以防止客户端破解token生成规则.
+
+#### 优点
+
+1. 服务端无状态, 不用考虑CSRF、分布式 session、跨域这些问题
+
+#### 缺点
+
+1. 性能, JWT 把状态数据都保存在了 headers, 相比 cookie 存在id, 传输消耗增大
+2. 没法让他主动失效
+可以配合 redis 来解决，记录下每个 token 对应的生效状态，每次先去 redis 查下 jwt 是否是可用的，这样就可以让 jwt 失效
+3. 安全性, 因为jwt 在客户端带了很多状态数据, 需要配合https, 避免信息泄漏
+
 ### SSO 单点登录
 
 - SSO 代理地址
@@ -182,7 +257,7 @@ SSO 的跳转地址 VUE_APP_SSO_LOGIN_URL
 
 ### 短信
 
-  ```vue
+```vue
 // 使用阿里云滑块验证
 <template>
   <div class="slide-bar" v-show="showSlideBar">
@@ -1251,3 +1326,15 @@ tips: （display：flex/grid/inline-flex）建立新的 flex/grid 格式上下�
     visibility:hidden;
 }
 ```
+
+## 前端上传和后端文件的区别?
+
+### 前端上传
+
+前端直接用oss 上传,前端会暴露accessKeySecret, 可以让后端生成sts给前端，前端用sts构造ossclient去上传, 而且就几分钟生效时间, 只给GET，PUT 权限, 不能删除也没事
+
+一般大文件走前端上传，因为前端-后端-oss的话，容易超时断开连接，要不然就走异步
+
+### 后端上传
+
+前端把文件传给后端，然后后端直接走oss上传
