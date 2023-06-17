@@ -1134,13 +1134,20 @@ vue.js 是采用数据劫持结合发布者-订阅者模式的方式，通过Obj
 
 #### hash
 
-- url 后方的# 原来是作为锚点跳转用，所以不会刷新浏览器，每次hash改变，都会在浏览器访问历史中增加一个记录。然后通过监听 hashchange，实现无刷新路由跳转
+- url 后方的# 原来是作为锚点跳转用，改变#不触发网页重载，改变#会改变浏览器的访问历史, 契合浏览器的前进后退。然后通过监听 `window.addEventListener("hashchange", () => {})` 实现无刷新路由跳转
 
 #### history
 
-- 直接用的 浏览器的 history interface，用 back ，go 这些方法跳转，pushState()、replaceState用来对浏览器历史记录栈进行修改
+- 直接用的 浏览器的 history interface，用 location.pathname 获取路由, 用 back ，go 这些方法跳转，pushState()、replaceState用来对浏览器历史记录栈进行修改, 结合 popstate 方法监听url中路由的变化
 
-**history 需要后端配合配置路由资源**
+- 刷新页面404, 因为Vue 是单页面应用, 所有的请求都是访问的index 目录,pathname 后面的路径匹配不到具体页面, 所以需要在服务器上重定向到index页面, 再走前端的路由, hash 模式没有这种情况是因为hash是用#表示的, 本意是用来代表浏览器页面锚点的, 所以不会出现在 HTTP 请求中
+
+```shell
+location / {
+  index  /data/dist/index.html;
+  try_files $uri $uri/ /index.html;
+}
+```
 
 ### vue for循环中 key 的作用
 
