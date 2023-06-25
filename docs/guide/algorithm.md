@@ -7,6 +7,60 @@ class LRUCache {
   /**
    * @param {number} capacity - 缓存容量
    */
+  constructor(capacity = 2) {
+    /**
+     * @type {number}
+     * 缓存容量
+     */
+    this.capacity = capacity;
+    /**
+     * @type {Map}
+     * 用来存储缓存项的 Map
+     */
+    this.cache = new Map();
+  }
+  
+  /**
+   * @param {number} key - 缓存键
+   * @return {number}
+   * 获取缓存值，如果不存在返回 -1
+   */
+  get(key) {
+    // 如果缓存中不存在该键，则返回 -1
+    if (!this.cache.has(key)) {
+      return -1;
+    }
+    const value = this.cache.get(key)
+    // 从缓存中删除该键值对，并重新插入以保证它是最近使用的
+    this.cache.delete(key);
+    this.cache.set(key, value);
+    // 返回缓存值
+    return value;
+  }
+  
+  /**
+   * @param {number} key - 缓存键
+   * @param {number} value - 缓存值
+   */
+  put(key, value) {
+    // 如果缓存中已经存在该键，则将其删除
+    if (this.cache.has(key)) {
+      this.cache.delete(key);
+    }
+    // 将该键值对插入缓存中
+    this.cache.set(key, value);
+    // 如果缓存已满，则删除最近最少使用的缓存项
+    if (this.cache.size > this.capacity) {
+      const firstKey = this.cache.keys().next().value;
+      this.cache.delete(firstKey);
+    }
+  }
+}
+
+class LRUCache {
+  /**
+   * @param {number} capacity - 缓存容量
+   */
   constructor(capacity) {
     /**
      * @type {number}
