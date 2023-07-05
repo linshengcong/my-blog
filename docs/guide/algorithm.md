@@ -386,3 +386,25 @@ const lengthOfLongestSubstring = function (s) {
   return Math.max(len, right - left)
 }
 ```
+
+## 比较版本号
+
+```js
+const compareVersion = (version1, version2) => {
+    const a = version1.split('.');
+    const b = version2.split('.');
+    const maxLength = Math.max(a.length, b.length);
+    for (let i = 0; i < maxLength; i++) {
+        const cur = a[i] || 0;
+        const next = b[i] || 0;
+        if (a[i] === b[i]) continue;
+        if (parseInt(cur) > parseInt(next)) {
+            return 1;
+        } else if(parseInt(cur) < parseInt(next)) {
+            return -1;
+        }
+    }
+    return 0;
+
+}
+```
