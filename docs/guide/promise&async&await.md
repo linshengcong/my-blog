@@ -29,10 +29,10 @@ const fn = async () => {
 ### 使用 await 配合 .catch() + if () 判断 response, or .catch 里面 throw or Promise 里面 reject(err)
 
 ```js
-const response = await axios("/xxx").catch(handleError) 
-if (!response) return
+const response1 = await axios("/xxx").catch(handleError) 
+if (!response1) return
 // or
-const response = await axios("/xxx").catch(err => throw err) 
+const response2 = await axios("/xxx").catch(err => throw err) 
 ```
 
 ## 并发执行最佳实践
