@@ -589,7 +589,7 @@ eleFile.addEventListener('change', function (event) {
 3. 渲染效果：SVG 使用矢量图形格式，因此可以缩放和变形而不失真，通过 DOM 渲染的，它可以与其他 HTML 元素结合使用.而 Canvas 通过 JavaScript 直接操作像素来绘制图形，对于大规模的图形和动画，性能更高，不能缩放和变形。
 4. 处理复杂图形：SVG 可以很容易地处理复杂的图形和图形变换，而 Canvas 需要自行编写 JavaScript 代码来处理。
 5. 交互性：SVG 可以很容易地处理交互性，包括鼠标事件、动画和滚动等，而 Canvas 需要通过自行编写 JavaScript 代码来实现。
-6. 性能：Canvas 通常比 SVG 快，特别是在处理大量图形和动画时，因为 Canvas 只需要重绘像素，而 SVG 需要重新解析和布局文档。
+6. 性能：Canvas 通常比 SVG 快，特别是在处理大量图形和动画时，因为 Canvas 只需要重绘像素，而 SVG 是基于DOM 需要重新解析和布局文档。
 7. 控制方式：SVG 可以使用 CSS 样式表和 JavaScript 进行控制，支持动态效果和交互操作；Canvas 只能使用 JavaScript 进行控制，动态效果和交互操作需要自己实现。
 8. 图形品质：SVG 图形可以任意缩放和变换，不会失真；Canvas 图形品质依赖于画布大小和绘制质量。
 

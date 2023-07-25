@@ -269,3 +269,187 @@ export default function ProductPage({ productId, referrer, theme }) {
     });
   }, [productId, referrer]);
 ```
+
+## css 样式隔离与样式穿透(Vue scoped & ::v-deep)
+
+- 在Vue 中是利用postcss 对样式做转换
+- 可以使用css module, 规则是中间带有 module (style.module.scss)
+- 文件使用 :global(.className) 可以把这个类声明一个全局规则, 实现样式穿透
+
+## router-view 是 outlet
+
+## React 状态管理 zustand
+
+```ts
+import { create } from 'zustand'
+import { User } from '@/types/api'
+
+export const useStore = create<{
+ token: string
+ userInfo: User.UserItem
+ updateToken: (token: string) => void
+ updateUserInfo: (userInfo: User.UserItem) => void
+}>(set => ({
+ token: '',
+ userInfo: {
+  _id: '',
+  userId: 0,
+  userName: '',
+ },
+ collapsed: false,
+ updateToken: token => set({ token }),
+ updateUserInfo: (userInfo: User.UserItem) => set({ userInfo }),
+}))
+```
+
+## useImperativeHandle & forwardRef
+
+- 使用useImperativeHandle，减少暴露给父组件的属性，避免使用 ref 这样的命令式代码
+
+### 组件暴露open方法
+
+文档地址：<https://react.dev/reference/react/useImperativeHandle>
+
+```js
+useImperativeHandle(ref, createHandle, dependencies?)
+```
+
+##### 方法一：**ref + forwardRef + useImperativeHandle**
+
+```jsx
+// 父组件 OrderList
+import React, { useEffect, useRef, useState } from 'react'
+
+export default () => {
+    const userRef = useRef()
+
+    const handleOpen = () => {
+        userRef.current?.open()
+    }
+    return <CreateUser ref={userRef} />
+}
+
+
+// 子组件 CreateUser
+const CreateUser = forwardRef((props: IProp, ref: any) => {
+    // 组件内部完成显隐
+    const [visible, setVisible] = useState(false)
+    // 暴露 open 方法给父组件调用
+    useImperativeHandle(ref, () => ({
+        open: () => {
+          setVisible(true)
+        }
+    }))
+    return (
+    <Modal
+      title="新增用户"
+      width={800}
+      open={visible}
+      okText="确定"
+      cancelText="取消"
+      onOk={handleOk}
+      onCancel={handleCancel}
+    >...此处省略...</Modal>
+})
+```
+
+**forwardRef官方解释：<https://zh-hans.reactjs.org/docs/react-api.html#reactforwardref>**
+
+##### 方法二：自定义属性 + useImperativeHandle
+
+```jsx
+// 父组件 OrderList
+import React, { useEffect, useRef, useState } from 'react'
+ 
+export default () => {
+    const userRef = useRef()
+
+    const handleOpen = () => {
+        userRef.current?.open()
+    }
+    return <CreateOrder userRef={userRef} />
+}
+
+// 子组件 CreateOrder
+interface IProp {
+  userRef: MutableRefObject<{ open: () => void } | undefined>
+}
+const CreateUser = (props: IProp) => {
+    const [visible, setVisible] = useState(false)
+    useImperativeHandle(props.userRef, () => ({
+        open: () => {
+          setVisible(true)
+        }
+    }))
+    return (
+        <Modal
+          title="新增用户"
+          width={800}
+          open={visible}
+          okText="确定"
+          cancelText="取消"
+          onOk={handleOk}
+          onCancel={handleCancel}
+        >...此处省略...</Modal>
+    )
+}
+```
+
+> 这种方式注意，<CreateOrder userRef={userRef} /> 组件上面的属性不可以定义ref，需要自定义其它属性。
+
+## 路由拦截
+
+**Loader功能介绍：**
+
+- 调用权限列表接口
+
+- 递归生成页面路径（后续页面权限判断使用）
+
+- 返回菜单列表、按钮列表和页面路径
+
+**获取Loader返回值**
+
+```js
+useRouteLoaderData('layout')
+```
+
+加载页面前，先执行Loader，获取权限列表，再根据权限列表动态生成左侧菜单。
+
+```js
+// 在layout 路由里注册loader, 保证所有需要鉴权的页面里会走校验流程
+{
+  id: 'layout',
+  element: <Layout />,
+  loader: AuthLoader,
+  children: []
+}
+```
+
+```ts
+// AuthLoader
+export default async function AuthLoader() {
+  const data = await api.getPermissionList()
+  const menuPathList = getMenuPath(data.menuList)
+  return {
+    buttonList: data.buttonList,
+    menuList: data.menuList,
+    menuPathList
+  }
+}
+```
+
+```jsx
+// useRouteLoaderData 会优先加载, 优先处理, 没有权限直接重定向
+// 权限判断
+const data = useRouteLoaderData('layout')
+const route = searchRoute(pathname, router)
+if (route && route.meta?.auth === false) {
+  // 正常向下加载页面
+} else {
+  // 没有权限且不是白名单内重定向403
+  const staticPath = ['/welcome', '/403', '/404']
+  if (!data.menuPathList.includes(pathname) && !staticPath.includes(pathname)) {
+    return <Navigate to='/403' />
+  }
+}
+```
