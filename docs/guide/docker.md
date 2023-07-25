@@ -25,7 +25,7 @@ RUN  --mount=type=cache,id=yarn_cache,sharing=shared,target=/usr/local/share/.ca
 ```
 
 ```dockerfile
-FROM node:14-alpine as builder
+FROM node:14-alpine as build-stage
  
 WORKDIR /code
  
@@ -39,5 +39,8 @@ RUN npm run build
 # 选择更小体积的基础镜像
 FROM nginx:alpine
 ADD nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder code/build /usr/share/nginx/html
+COPY --from=build-stage /code/build /usr/share/nginx/html
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
 ```
