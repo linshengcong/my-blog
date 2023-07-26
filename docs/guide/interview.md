@@ -443,38 +443,22 @@ get post 请求, 把入参sort 排序后再加盐再用特定格式输出一个�
 
 ```js
 let obj = {
-      a: { b: 22 },
-      c: { d: { g: [33, 22, 11] } }
-    };
-    // 方法1
-    let copy = JSON.parse(JSON.stringify(obj));
-    console.log(copy);
-    // 方法2
-    let clone = {}
-    for (const key in obj) {
-      clone[key] = obj[key]
-    }
-    obj.a = 'hh'
-    console.log(clone);
-//封装好的深拷贝
-function deepClone(origin, target) {
-      var target = target || {},//这里的var改成let就报错？
-        toStr = Object.prototype.toString,
-        arrStr = '[object Array]'
-      for (let prop in origin) {
-        if (origin.hasOwnProperty(prop)) {
-          if (origin[prop] !== 'null' && typeof (origin[prop]) == 'object') {
-            target[prop] = toStr.call(origin[prop]) == arrStr ? [] : {}
-            deepClone(origin[prop], target[prop])
-          } else {
-            target[prop] = origin[prop]
-          }
-        }
-      }
-      return target;
-    }
-    let obj1 = {};
-    deepClone(obj, obj1)
+  a: { b: 22 },
+  c: { d: { g: [33, 22, 11] } }
+};
+
+function deepClone(origin, target = {}) {
+  
+  Object.keys(origin).forEach(prop => {
+    const originProp = origin[prop]
+    if (typeof originProp === 'object' && originProp !== null) {
+      target[prop] = Array.isArray(originProp) ? [] : {}
+      deepClone(originProp, target[prop])
+    } else target[prop] = originProp
+  })
+  return target
+}
+
 ```
 
 ### forEach polyfill
@@ -548,6 +532,7 @@ if (!Array.prototype.forEach) {
 ```js
 // map
 Array.prototype._m = function(callback, instance) {
+
     if (typeof callback !== 'function') {
         throw new Error('必须传入一个函数')
     }
@@ -719,19 +704,23 @@ for(var i=0; i<100; i++){
   <input id="search" name="">
   <script>
     document.querySelector('#search').addEventListener("input", debounce(log))
-    function debounce(fn, wait = 500) {
-      let timer = null
-      return function () {
-        // 每次当用户点击/输入的时候，把前一个定时器清除
-        timer && clearTimeout(timer)
-        // 然后创建一个新的 setTimeout，
-        // 这样就能保证点击按钮后的 interval 间隔内
-        // 如果用户还点击了的话，就不会执行 fn 函数
-        timer = setTimeout(() => {
-          // this 指向DOM
-          fn.apply(this, arguments)
-        }, wait);
-      }
+
+    function debounce(fn, delay = 1000) {
+        // 实现防抖函数的核心是使用setTimeout
+        // time变量用于保存setTimeout返回的Id
+
+        let time = null
+
+        // 将回调接收的参数保存到args数组中
+        return function (...args) {
+
+          // 如果time不为0，也就是说有定时器存在，将该定时器清除
+          time !== null && clearTimeout(time)
+          time = setTimeout(() => {
+              // 使用apply改变fn的this，同时将参数传递给fn
+              fn.apply(this, args)  
+          }, delay)
+        }
     }
     function log() {
       console.log('hello')
@@ -748,9 +737,7 @@ for(var i=0; i<100; i++){
             let flag = true
             return function () {
                 //在函数开头判断标志是否为 true，不为 true 则中断函数
-                if (!flag) {
-                    return
-                }
+                if (!flag) return
                 // 将 canRun 设置为 false，防止执行之前再被执行
                 flag = false
                 setTimeout(() => {

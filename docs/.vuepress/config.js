@@ -6,7 +6,8 @@ const getFileNames = parentFileName => {
   const files = fs.readdirSync(`./docs/${parentFileName}`)
   const res = []
   files.forEach(fileName => {
-    const blacklist = ['project.md', 'interview.md']
+    // const blacklist = ['project.md', 'interview.md']
+    const blacklist = ['project.md']
     if ((process.env.NODE_ENV !== 'development' && blacklist.includes(fileName))) return
     if (pathModule.extname(fileName) === '.md') {
       const path = fileName.slice(0, fileName.length - 3)
@@ -164,13 +165,13 @@ module.exports = {
           { text: '梦境', link: '/words/dream' }
         ]
       },
-      // {
-      //   text: '知识库',
-      //   items: [
-      //     { text: '技术笔记', link: '' },
-      //     { text: '算法笔记', link: '' },
-      //   ]
-      // },
+      {
+        text: '项目管理工具',
+        items: [
+          { text: '甘特图', link: 'https://gantt-chart.linshengcong.tech' },
+          { text: '流程图', link: 'https://flow-chart2.linshengcong.tech' },
+        ]
+      },
       {
         text: '留言板', link: '/link/contact',
       },

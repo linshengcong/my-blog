@@ -408,3 +408,28 @@ const compareVersion = (version1, version2) => {
 
 }
 ```
+
+## 千位分隔数
+
+```js
+/**
+ * @param {number} n
+ * @return {string}
+ */
+var thousandSeparator = function (n) {
+
+    n = String(n)
+    let len = n.length
+    const arr = [];
+    if (len <= 3) return n;
+
+    for (var i = len - 1; i >= 0; i -= 3) {
+        arr.push(n[i]);
+        arr.push(n[i - 1]);
+        arr.push(n[i - 2]);
+        arr.push('.');
+    }
+    arr.pop();
+    return arr.reverse().join('');
+};
+```
