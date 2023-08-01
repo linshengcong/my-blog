@@ -228,6 +228,59 @@ gzip_vary on; // 启用应答头"Vary: Accept-Encoding"
 gzip_disable "MSIE [1-6]."; // 根据 UA 匹配不需要gzip压缩的浏览器
 ```
 
+### DllPlugin
+
+- 打包速度优化, 利用提前把第三方包分离到动态库的模块, 生成打包后的 dll.vendor.js 文件与描述动态链接库的 manifest.json, 把dll.vendor.js 在index.html 内引入, 下次打包就不用打包第三方库, 只用打包业务代码, 大大提高打包速度, 一般只在生产中开启
+
+### happyPack
+
+- Happypack 开启多进程打包, webpack 构建过程loader 的各种转换是特别耗时的
+- 让子进程把一些常用的loader 替换成 happyPack/loader, 处理好后交给主进程
+
+```js
+const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const HappyPack = require('happypack');
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        // 把对 .js 文件的处理转交给 id 为 babel 的 HappyPack 实例
+        use: ['happypack/loader?id=babel'],
+        // 排除 node_modules 目录下的文件，node_modules 目录下的文件都是采用的 ES5 语法，没必要再通过 Babel 去转换
+        exclude: path.resolve(__dirname, 'node_modules'),
+      },
+      {
+        // 把对 .css 文件的处理转交给 id 为 css 的 HappyPack 实例
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          use: ['happypack/loader?id=css'],
+        }),
+      },
+    ]
+  },
+  plugins: [
+    new HappyPack({
+      // 用唯一的标识符 id 来代表当前的 HappyPack 是用来处理一类特定的文件
+      id: 'babel',
+      // 如何处理 .js 文件，用法和 Loader 配置中一样
+      loaders: ['babel-loader?cacheDirectory'],
+      // ... 其它配置项
+    }),
+    new HappyPack({
+      id: 'css',
+      // 如何处理 .css 文件，用法和 Loader 配置中一样
+      loaders: ['css-loader'],
+    }),
+    new ExtractTextPlugin({
+      filename: `[name].css`,
+    }),
+  ],
+};
+```
+
 ### 图片优化
 
 - image-webpack-loader 对图片进行压缩

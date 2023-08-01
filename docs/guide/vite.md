@@ -88,3 +88,24 @@ build: {
     },   //去除 console debugger
 },
 ```
+
+### 图片压缩
+
+```js
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import imagemin from 'unplugin-imagemin/vite';
+import viteImagemin from 'vite-plugin-imagemin'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [
+    vue(),   
+    viteImagemin()
+  ]
+});
+```
+
+### Css 优化
+
+- 在 `postcss.config.js` 使用 cssnano 压缩css 文件
