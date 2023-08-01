@@ -61,15 +61,15 @@ module.exports = {
     ],
     '@vuepress/back-to-top',
     '@vuepress/medium-zoom',
-    ['@vuepress/pwa', {
-      serviceWorker: true,
-      //指向自定义组件
-      //popupComponent: 'MySWUpdatePopup',
-      updatePopup: {
-        message: "新的风暴已经出现",
-        buttonText: "盘他"
-      }
-    }],
+    // ['@vuepress/pwa', {
+    //   serviceWorker: true,
+    //   //指向自定义组件
+    //   //popupComponent: 'MySWUpdatePopup',
+    //   updatePopup: {
+    //     message: "新的风暴已经出现",
+    //     buttonText: "盘他"
+    //   }
+    // }],
     [
       'vuepress-plugin-comment',
       {

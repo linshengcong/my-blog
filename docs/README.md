@@ -1,6 +1,6 @@
 ---
 home: true
-heroImage: https://i.328888.xyz/2023/04/03/iOoE4V.gif
+heroImage: https://linshengcong-cra.oss-cn-shenzhen.aliyuncs.com/IMG_1739.gif
 actionText: 去看看 →
 actionLink: /guide/SVG&Canvas
 features:
