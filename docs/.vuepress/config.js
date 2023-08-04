@@ -151,18 +151,12 @@ module.exports = {
       {
         text: '技术相关', link: '/guide/TypeScript',
         items: [
+          { text: 'Linux', link: '/guide/Linux' },
           { text: 'SVG & Canvas', link: '/guide/SVG&Canvas' },
-          { text: 'Vue', link: '/guide/vue' },
-          { text: '设计模式', link: '/guide/designPattern' }
-        ]
-      },
-      {
-        text: '我喜欢的文字',
-        items: [
-          { text: '短文', link: '/words/myFavoriteWords' },
-          { text: '长文', link: '/words/myFavoriteArticle' },
-          { text: '音乐', link: '/words/myMusic' },
-          { text: '梦境', link: '/words/dream' }
+          { text: '算法', link: '/guide/algorithm' },
+          { text: 'Vue3 最佳实践', link: '/guide/vue.html#vue3-最佳实践' },
+          { text: '设计模式', link: '/guide/designPattern' },
+          { text: 'webpack', link: '/guide/webpack' }
         ]
       },
       {
@@ -174,6 +168,15 @@ module.exports = {
       },
       {
         text: '留言板', link: '/link/contact',
+      },
+      {
+        text: '我喜欢的文字',
+        items: [
+          { text: '短文', link: '/words/myFavoriteWords' },
+          { text: '长文', link: '/words/myFavoriteArticle' },
+          { text: '音乐', link: '/words/myMusic' },
+          { text: '梦境', link: '/words/dream' }
+        ]
       },
       // {
       //   text: '博客',
