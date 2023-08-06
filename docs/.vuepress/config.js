@@ -6,8 +6,7 @@ const getFileNames = parentFileName => {
   const files = fs.readdirSync(`./docs/${parentFileName}`)
   const res = []
   files.forEach(fileName => {
-    // const blacklist = ['project.md', 'interview.md']
-    const blacklist = ['project.md']
+    const blacklist = ['project.md', 'interview.md']
     if ((process.env.NODE_ENV !== 'development' && blacklist.includes(fileName))) return
     if (pathModule.extname(fileName) === '.md') {
       const path = fileName.slice(0, fileName.length - 3)
@@ -155,6 +154,7 @@ module.exports = {
           { text: 'SVG & Canvas', link: '/guide/SVG&Canvas' },
           { text: '算法', link: '/guide/algorithm' },
           { text: 'Vue3 最佳实践', link: '/guide/vue.html#vue3-最佳实践' },
+          { text: 'React 最佳实践', link: '/guide/react.html#最佳实践' },
           { text: '设计模式', link: '/guide/designPattern' },
           { text: 'webpack', link: '/guide/webpack' }
         ]

@@ -265,43 +265,17 @@ resolvePromise 里判断判断是值还是函数，是函数就在调用，是�
 ## promise.all
 
 ```js
- let promiseAll = (promises)=>{
-            return new Promise((resolve,reject)=>{
-                let values=new Array(promises.length);
-                let finishCount=0;
-                for(let i=0;i<promises.length;++i){
-                    let promise = promises[i];
-                    promise.then(val=>{
-                        values[i]=val;
-                        ++finishCount;
-                        if(finishCount===promises.length){ //用队列作为缓存，最后一个成功 resolve 了一起返回整个队列
-                            resolve(values);
-                        }
-                    }).catch(err=>{
-                        reject(err)
-                    })
-                }
-                
-            })
-        }
+Promise._All = function (promises) {
+  let arr = [],
+    count = 0
+  return new Promise((resolve, reject) => {
+    promises.forEach((item, i) => {
+      Promise.resolve(item).then(res => {
+        arr[i] = res
+        count += 1
+        if (count === promises.length) resolve(arr)
+      }, reject)
+    })
+  })
+}
 ```
-
-测试用例：
-
-```js
-        function getP(name,time){
-            return new Promise(function(resolve,reject){
-                setTimeout(()=>{
-                    resolve(name)
-                    console.log(name);
-                },time)
-            })
-        }
-
-        promiseAll([getP('p1',1000),getP('p2',500),getP('p3',1500)]).then((values)=>{
-            console.log(values);
-            console.log('all resolved')
-        });
-```
-
-···

@@ -817,51 +817,30 @@ callback({a:1, b:2}); // 后端需要传递的数据直接作为调用参数
 
 ## js 原型链、作用域链、闭包特性
 
-### 原型链
+### 原型与原型链
 
-​ 当你访问一个对象的原型的时候，如果没有找到，就会往它的原型中，也就是对应的构造函数的prototype属性所对应的原型中找，要是还是没有的话，就继续往原型中-poto-属性对应的原型中找，这样的链式结构就是好原型链
+- 原型是用来共享属性和方法的, 每个对象都有一个原型, 你访问一个对象的属性，如果没有找到，就会往它的原型(就是__proto__属性, 同时也是对应的构造函数的prototype属性)中去查找, 还没有就会再往上层查找, 这样链式查找就形成原型链.
 
-<https://zhuanlan.zhihu.com/p/23090041>
+1. js分为函数对象和普通对象，每个对象都有__proto__属性，但是只有函数对象才有prototype属性
+2. Object、Function都是js内置的函数, 类似的还有我们常用到的Array、RegExp、Date、Boolean、Number、String
+3. 属性__proto__是一个对象，它有两个属性，constructor和__proto__
+4. 原型对象prototype有一个默认的constructor属性，用于记录实例是由哪个构造函数创建
 
 ```js
-    class Animal {
-      //构造函数，里面写上对象的属性
-      constructor(props) {
-        this.name = props.name || 'Unknown';
-      }
-      //方法写在后面
-      eat() {//父类共有的方法
-        console.log(this.name + " will eat pests.");
-      }
-    }
-
-    //class继承
-    class Bird extends Animal {
-      //构造函数
-      constructor(props, myAttribute) {//props是继承过来的属性，myAttribute是自己的属性
-        //调用实现父类的构造函数
-        super(props)//相当于获得父类的this指向
-        this.type = props.type || "Unknown";//父类的属性，也可写在父类中
-        this.attr = myAttribute;//自己的私有属性
-      }
-
-      fly() {//自己私有的方法
-        console.log(this.name + " are friendly to people.");
-      }
-      myattr() {//自己私有的方法
-        console.log(this.type + '---' + this.attr);
-      }
-    }
-
-    //通过new实例化
-    var myBird = new Bird({
-      name: '小燕子',
-      type: 'Egg animal'//卵生动物
-    }, 'Bird class')
-    myBird.eat()
-    myBird.fly()
-    myBird.myattr()
+// 原型对象（即Person.prototype）的constructor指向构造函数本身
+Person.prototype.constructor == Person 
+// 实例（即person01）的__proto__和原型对象指向同一个地方
+person01.__proto__ == Person.prototype 
 ```
+
+```js
+Object.prototype.__proto__ = null;
+Array.prototype.__proto__ = Object.prototype;
+Foo.prototype.__proto__  = Object.prototype;
+```
+
+- 除了Object的原型对象（Object.prototype）的__proto__指向null，其他内置函数对象的原型对象（例如：Array.prototype）和自定义构造函数的
+__proto__都指向Object.prototype, 因为原型对象本身是普通对象。
 
 ### 利用构造函数继承
 
