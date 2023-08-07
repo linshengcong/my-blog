@@ -2,38 +2,7 @@
 
 ## Vue3 最佳实践
 
-### 使用 .sync 传递变量 (这是Vue2 内容, Vue3 可以用多个v-mode l:name 达到一样的效果)
-
-```js
- // 父组件
-     <report :showReport.sync="showReport"></report>
- // 子组件
-  <el-dialog
-    :visible="showReport"
-    @update:visible="$emit("update:showReport", false)"
-  >
-```
-
 ### 对于不需要响应式的变量及时取消相应式  `unref(isMobile)`
-
-### 想通过组件的ref 操作时, ref 的类型声明
-
-```vue
-  <Form
-        ref="form"
-        :formState="formState"
-        :isEdit="isEdit"
-        @close="emit('update:modalVisible', false)"
-        @refresh="emit('refresh')"
-  />
-  import Form from './Form.vue';
-  const form = ref<InstanceType<typeof Form>>();
-  const handleOk = () => {
-    form.value?.onSubmit();
-  };
-
-// 遇到JSX 的组件会识别不了
-```
 
 ### 关于 reactive 用法
 
@@ -113,9 +82,27 @@ data.value.attr = 'foo'
 </script>
 ```
 
-### issue
+### 想通过组件的ref 操作时, ref 的类型声明
 
 - 使用jsx 组件, 引用的时候使用 instanceType 类型, 无法自动获取组件内部类型
+
+```jsx
+  <Form
+        ref="form"
+        :formState="formState"
+        :isEdit="isEdit"
+        @close="emit('update:modalVisible', false)"
+        @refresh="emit('refresh')"
+  />
+  import Form from './Form.vue';
+  const form = ref<InstanceType<typeof Form>>();
+  const handleOk = () => {
+    form.value?.onSubmit();
+  };
+
+// 遇到JSX 的组件会识别不了
+```
+
 - 两个办法
   1. 自己声明类型暴露出去(主动行为)
   2. 用一个变量接收 JSX, 使用render 函数 return 出去, 具体如下(被动行为)
@@ -144,25 +131,6 @@ export default defineComponent({
 - 下载npm 包
 - babel-helper-vue-jsx-merge-props
 - babel-preset-jsx
-
-### jsx 组件, 引用的时候使用 instanceType 类型, 无法识别, 两个办法, 一个是自己写类型, 另一个是用一个变量接收 render 函数, 然后 return 到全局
-
-```js
-import { defineComponent, RenderFunction } from 'vue'
-let $render: RenderFunction
-
-export default defineComponent({
-  name: 'EditForm',
-  emits: ['success'],
-  setup(props, { emit }) {
-    $render = () => <></>
-    return { showModal }
-  },
-  render() {
-    return $render()
-  }
-})
-```
 
 ### 在Vue 中的jsx, 采用的驼峰和React 不一样(大坑)
 

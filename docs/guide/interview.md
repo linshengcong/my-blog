@@ -792,7 +792,7 @@ for(var i=0; i<100; i++){
 
 4. nginx 方向代理
 
-5. 设置cors
+5. 设置 cors
 
 6. jsonp，利用 script img iframe 等标签src 不受通源策略影响的特点进行跨域，缺点是只能get请求。其实就是后端去调用前端的代码，前端先定义一个函数，再用script标签加载的是一个合法的js代码文件，并且把函数名字传给后端，后端取了你的参数调用对应的函数并把数据作为参数返回给你，前端下载完文件自动调用这个函数做对应的处理
 
@@ -1176,16 +1176,31 @@ data() {
 
 ## 性能优化
 
-1. requestAnimationFrame
+前端性能优化可以从几方面讲
 
-- requestAnimationFrame的优点是它能够将所有的动画都放到一个浏览器重绘周期里去做
+1. 工程打包优化 dllPlugin、happyPack、CDN、gzip、imgage-loader、svgo雪碧图、cacheGroup(splitChunk)、terser(uglifyjs)
+2. 首评渲染速度
+3. 异步、拆分 图片懒加载、Tree 懒加载、分页加载、虚拟列表、路由懒加载、组件单例模式
+4. 缓存、复用 http请求缓存, CDN缓存、页面缓存, 静态资源缓存 本地缓存hybrid 离线包
+5. 合并 requestAnimationFrame、DocumentFragment、SSR、BFF数据聚合、setState事件合并、diff 差量更新
+
+```js
+import { lazy，, Suspense } from 'react'
+const Home = lazy(() => import('../Home'))
+```
+
+### requestAnimationFrame
+
+- requestAnimationFrame 的优点是它能够将所有的动画都放到一个浏览器重绘周期里去做
 - 还能根据浏览器以及计算机性能计算帧率
-- 他只是请求浏览器在下一次可以获得的机会去展示一帧画面，而不是在一个已经规划好的间隔。也就是说浏览器能够根据页面加载，元素显示，电池的状态来选择requestAnimationFrame的性能。
+- 他只是请求浏览器在下一次可以获得的机会去展示一帧画面，而不是在一个已经规划好的间隔。也就是说浏览器能够根据页面加载，元素显示，电池的状态来选择 requestAnimationFrame 的性能。
 
 2. DocumentFragment
 
 - 文档片段, dom 批量更新时使用
-- DocumentFragment节点不属于文档树，存在于内存中，并不在DOM中，所以将子元素插入到文档片段中时不会引起页面回流
+- DocumentFragment 节点不属于文档树，存在于内存中，并不在DOM中，所以将子元素插入到文档片段中时不会引起页面回流
+
+- 以上两者和React setState 事件合并更新渲染是一个道理
 
 ### 回流重绘优化 会使cpu使用率上升 niko and
 
