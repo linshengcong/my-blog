@@ -162,7 +162,7 @@ module.exports = {
       {
         text: '项目管理工具',
         items: [
-          { text: '甘特图', link: 'https://gantt-chart.linshengcong.tech' },
+          // { text: '甘特图', link: 'https://gantt-chart.linshengcong.tech' },
           { text: '流程图', link: 'https://flow-chart2.linshengcong.tech' },
         ]
       },
