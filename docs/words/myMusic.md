@@ -1,10 +1,10 @@
 # 我喜欢的音乐
 
 ## 匈牙利舞曲第四号
+
 <br />
 <audio controls loop>
-  <source src="https://linshengcong-cra.oss-cn-shenzhen.aliyuncs.com/%E5%8C%88%E7%89%99%E5%88%A9%E8%88%9E%E6%9B%B2%E7%AC%AC%E5%9B%9B%E5%8F%B7.mp3
-" type="audio/mp3">
+  <source src="https://linshengcong-cra.oss-cn-shenzhen.aliyuncs.com/Brahms.mp3" type="audio/mp3">
   您的浏览器不支持 audio 元素。
 </audio>
 
@@ -13,8 +13,6 @@
 <br />
 <br />
 <br />
-
-
 
 **每艘船都注定要去流浪, 只有漂在海里才能找到自己存在的意义**
 
@@ -25,9 +23,9 @@
 <!-- 我想抓住它, 转身奔去, 再给我一点时间吧 -->
 
 ## 裸体歌舞
+
 <br />
 <audio controls loop>
-  <source src="https://linshengcong-cra.oss-cn-shenzhen.aliyuncs.com/daily_download.mp3" type="audio/mp3">
   <source src="https://linshengcong-cra.oss-cn-shenzhen.aliyuncs.com/daily_download.mp3" type="audio/mp3">
   您的浏览器不支持 audio 元素。
 </audio>
@@ -37,3 +35,24 @@
 女孩平静的踏上舞台, 缓缓的跳起天鹅舞, 她踮起脚尖, 悄悄的踱步, 旋转、跳跃,慢慢的褪去全身的衣服, 在灯光下忽隐忽现的是她自由的笑容和光洁的身体, 在舞台上左右肆意飘动.
 
 曲毕, 默默的拾起角落的衣服, 一切又恢复平静
+
+## Star in your dream
+
+<br />
+<audio controls loop>
+  <source src="https://linshengcong-cra.oss-cn-shenzhen.aliyuncs.com/starInYourDream.mp3" type="audio/mp3">
+  您的浏览器不支持 audio 元素。
+</audio>
+
+不论我如何烦躁疲惫, 耳边响起她时, 我都会闭上双眼.
+一下就回到了那个夜晚, 那个空旷的斜坡上, 飓风把花草吹的四处摇摆, 我被钉到它们中间, 呼吸急促又动弹不得.
+睁开双眼, 直视着天空, 天空上繁星点点.
+天空深处, 她默默的和我对视, 弹奏着这首曲子.
+
+### 我爱黑夜
+
+每当到达深夜，夜不能寐。闭上眼。黑暗的天空便会坠入我的脑海中，那里乌云密布，电闪雷鸣。交织出无数的真理和创意。
+
+睁开眼。我爱黑暗，我爱夜晚。我爱这微弱的光源。我爱这影影绰绰的光线。我爱空调平稳的呼吸和窗外汽车低声的呼啸、玻璃碰撞在一起的脆响。
+
+沉下心，仔细听那窗外细碎的声源。默默的钻入我的耳中, 敲锣打鼓起来, 迸发出无限的火花。

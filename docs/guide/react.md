@@ -1,5 +1,75 @@
 # React
 
+## 容器组件与展示组件分离
+
+拆分出通用的 isLoading、data、error 作为 hooks, 与展示组件结偶
+还可以传入fetchUrl 和一系列配置, 抽象一个更通用的hooks
+
+```jsx
+import { useEffect, useState } from 'react';
+import { ISinglePost } from '../Definitions';
+
+export default function usePosts() {
+  const [posts, setPosts] = useState<ISinglePost[] | null>(null);
+  const [isLoading, setIsLoading] = useState<Boolean>(false);
+  const [error, setError] = useState<unknown>();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setIsLoading(true);
+        const resp = await fetch('https://jsonplaceholder.typicode.com/posts');
+        const data = await resp.json();
+        setPosts(data.filter((post: ISinglePost) => post.userId === 1));
+        setIsLoading(false);
+      } catch (err) {
+        setError(err);
+        setIsLoading(false);
+      }
+    })();
+  }, []);
+
+  return {
+    isLoading,
+    posts,
+    error
+  };
+}
+
+
+```
+
+```jsx
+/**
+ * 展示组件
+ */
+import { ISinglePost } from '../Definitions';
+import usePosts from '../hooks/usePosts';
+import SinglePost from './SinglePost';
+
+export default function Posts(props: { posts: ISinglePost[] }) {
+  const { isLoading, posts, error } = usePosts();
+
+  return (
+    <ul
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}
+    >
+      {isLoading ? (
+        <span>Loading...</span>
+      ) : posts ? (
+        posts.map((post: ISinglePost) => <SinglePost {...post} />)
+      ) : (
+        <span>{JSON.stringify(error)}</span>
+      )}
+    </ul>
+  );
+}
+```
+
 ## hooks基本原则
 
 1. 只在最顶层使用 Hook
