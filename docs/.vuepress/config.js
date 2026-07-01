@@ -150,6 +150,7 @@ module.exports = {
       {
         text: '技术相关', link: '/guide/TypeScript',
         items: [
+          { text: '小程序', link: '/guide/miniProgram' },
           { text: 'Linux', link: '/guide/Linux' },
           { text: 'SVG & Canvas', link: '/guide/SVG&Canvas' },
           { text: '算法', link: '/guide/algorithm' },
